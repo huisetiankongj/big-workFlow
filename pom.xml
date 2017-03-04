@@ -77,8 +77,7 @@
 		</dependency>
 		
 		<!-- activiti end-->
-		
-		
+
   		<!-- 依赖big-common后台java -->
 		<dependency>
 			<groupId>com.it313.big</groupId>

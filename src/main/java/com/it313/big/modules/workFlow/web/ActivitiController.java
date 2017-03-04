@@ -1,9 +1,13 @@
 package com.it313.big.modules.workFlow.web;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipInputStream;
+
+import net.sf.json.JSONObject;
 
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.ProcessDefinition;
@@ -20,8 +24,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.it313.big.common.persistence.paginate.Paginate;
-import com.it313.big.common.web.ActivitiAbstractController;
+import com.it313.big.common.web.ActAbstractController;
 import com.it313.big.modules.workFlow.entity.PageMap;
+import com.it313.big.modules.workFlow.entity.SelfProcessDefinition;
+import com.it313.big.modules.workFlow.utils.BeanUtils;
 import com.it313.big.modules.workFlow.utils.WorkflowUtils;
 
 /**
@@ -32,7 +38,7 @@ import com.it313.big.modules.workFlow.utils.WorkflowUtils;
 
 @Controller
 @RequestMapping(value = "${adminPath}/workFlow/")
-public class ActivitiController extends ActivitiAbstractController{
+public class ActivitiController extends ActAbstractController{
 
 	
 	@RequiresPermissions("sys:workFlow:view")
@@ -44,22 +50,28 @@ public class ActivitiController extends ActivitiAbstractController{
 	@RequiresPermissions("sys:workFlow:view")
 	@RequestMapping(value = {"process/list"})
 	@ResponseBody
-	public Object list(@RequestBody PageMap pageMap){
-		Paginate paginate = pageMap.getPaginate();
-		int curPage = paginate.getCurrentPage();
-		int rowOfPage = paginate.getRowsOfPage();
-		int firstResult = (curPage-1)*rowOfPage;
-		int maxResults = curPage*rowOfPage;
+	public Object list(@RequestBody SelfProcessDefinition pageMap){
+		Paginate<SelfProcessDefinition> paginate = (Paginate<SelfProcessDefinition>)pageMap.getPaginate();
 		ProcessDefinitionQuery processDefinitionQuery = repositoryService.createProcessDefinitionQuery();
 		List<ProcessDefinition> list = repositoryService.createProcessDefinitionQuery()
-														.listPage(firstResult, maxResults);
-		
+														.listPage(paginate.getStartRowNum(), paginate.getLastRowNum());
 		int totalRow = (int) processDefinitionQuery.count();
-		paginate.setSize(list.size());
-		paginate.setDatas(list);
-		paginate.setTotalRows(totalRow);
-		paginate.setTotalPages(totalRow%rowOfPage==0?totalRow/rowOfPage:totalRow/rowOfPage+1);
-		return paginate;
+		
+		List<SelfProcessDefinition> entryList = new ArrayList<SelfProcessDefinition>();
+		String[] ignore = new String[1];
+		ignore[0] = "deploymentName";
+		for(int i=0,len=list.size();i<len;i++){
+			SelfProcessDefinition e = new SelfProcessDefinition();
+			ProcessDefinition p = list.get(i);
+			try {
+				BeanUtils.copyProperties(p,e,ignore);
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+			entryList.add(e);
+		}
+		Paginate<SelfProcessDefinition> selfProcessDefinitionList = new Paginate<SelfProcessDefinition>(entryList,paginate.getCurrentPage(), paginate.getRowsOfPage(),totalRow,paginate.getMenuId());
+		return selfProcessDefinitionList;
 	}
 	
 	
