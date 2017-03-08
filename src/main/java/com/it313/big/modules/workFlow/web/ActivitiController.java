@@ -2,13 +2,8 @@ package com.it313.big.modules.workFlow.web;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.zip.ZipInputStream;
-
-import net.sf.json.JSONObject;
-
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.repository.ProcessDefinitionQuery;
@@ -22,10 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
-
 import com.it313.big.common.persistence.paginate.Paginate;
 import com.it313.big.common.web.ActAbstractController;
-import com.it313.big.modules.workFlow.entity.PageMap;
 import com.it313.big.modules.workFlow.entity.SelfProcessDefinition;
 import com.it313.big.modules.workFlow.utils.BeanUtils;
 import com.it313.big.modules.workFlow.utils.WorkflowUtils;
@@ -54,17 +47,22 @@ public class ActivitiController extends ActAbstractController{
 		Paginate<SelfProcessDefinition> paginate = (Paginate<SelfProcessDefinition>)pageMap.getPaginate();
 		ProcessDefinitionQuery processDefinitionQuery = repositoryService.createProcessDefinitionQuery();
 		List<ProcessDefinition> list = repositoryService.createProcessDefinitionQuery()
+														.orderByProcessDefinitionVersion().asc()
 														.listPage(paginate.getStartRowNum(), paginate.getLastRowNum());
 		int totalRow = (int) processDefinitionQuery.count();
 		
 		List<SelfProcessDefinition> entryList = new ArrayList<SelfProcessDefinition>();
-		String[] ignore = new String[1];
-		ignore[0] = "deploymentName";
+		String[] ignore = {"deploymentName","deploymentTime"};
+		
 		for(int i=0,len=list.size();i<len;i++){
 			SelfProcessDefinition e = new SelfProcessDefinition();
 			ProcessDefinition p = list.get(i);
 			try {
 				BeanUtils.copyProperties(p,e,ignore);
+				String deploymentId = p.getDeploymentId();
+		        Deployment deployment = repositoryService.createDeploymentQuery().deploymentId(deploymentId).singleResult();
+		        e.setDeploymentName(deployment.getName());
+		        e.setDeploymentTime(deployment.getDeploymentTime());
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
