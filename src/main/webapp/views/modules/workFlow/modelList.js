@@ -3,11 +3,10 @@ $(function() {
 			url: {
 				list: rootPath + "/workFlow/process/list?t="+new Date().getTime(),
 				del: rootPath + "/workFlow/process/delete?t="+new Date().getTime(),
-				form : rootPath + "/workFlow/process/form?t="+new Date().getTime(),
 				updateState :rootPath + "/workFlow/process/updateState?t="+new Date().getTime()
 			},
 			fnDeploy: function(){
-				processDefinitionSvc.fnprocessDefinitionModal('部署流程信息');
+				
 			},
 			fnDelete: function(info){
 				Svc.AjaxJson.post(processDefinitionSvc.url.del+"&deploymentId="+info.deploymentId,{},function(response){
@@ -32,7 +31,7 @@ $(function() {
 			},
 			fnprocessDefinitionModal: function(title,info,url){
 				API.fnShowForm({
-					url: url?url:processDefinitionSvc.url.form+(info?('&id='+info.id):''),
+					url: url?url:processDefinitionSvc.url.processDefinitionForm+(info?('&id='+info.id):''),
 					title: title
 				});
 			},
@@ -60,8 +59,8 @@ $(function() {
 			}
 	}
 	var aButtons =[
-	  		        { sExtends: "tiny", sButtonClass:"btn btn-success btn-sm", sButtonText: "部署", fnClick: function(nButton, oConfig) {
-			         	 	processDefinitionSvc.fnDeploy();
+	  		        { sExtends: "tiny", sButtonClass:"btn btn-success btn-sm hide", sButtonText: "部署", fnClick: function(nButton, oConfig) {
+			         	 	processDefinitionSvc.fnSave();
 			        }}
 			       ];
 		             
@@ -81,11 +80,11 @@ $(function() {
 					{ aTargets: [ 5 ], mDataProp: "resourceName", sTitle: "XML"},
 					{ aTargets: [ 6 ], mDataProp: "diagramResourceName", sTitle: "图片"},
 					{ aTargets: [ 7 ], mDataProp: "suspended",sTitle: "是否挂起",mData:function(data){
-						var spanClass = "label-danger",
+						var spanClass= "label-success",
 							spanText = "挂起",
 							state = "0";
 						if(data.suspended){
-							spanClass= "label-success";
+							spanClass = "label-danger";
 							spanText = "激活";
 							state = "1";
 						}	
