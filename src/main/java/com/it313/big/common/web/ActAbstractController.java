@@ -13,6 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class ActAbstractController extends BaseController{
 
+	/**
+	 * 日志对象
+	 */
 	protected Logger logger = LoggerFactory.getLogger(getClass());
 	
 	@Autowired

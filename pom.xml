@@ -75,7 +75,6 @@
 		    <artifactId>activiti-process-validation</artifactId>
 		    <version>${activiti.version}</version>
 		</dependency>
-		
 		<!-- activiti end-->
 		
 		<dependency>
