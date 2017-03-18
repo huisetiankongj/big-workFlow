@@ -7,7 +7,7 @@
   
   <properties>
   		<big-common.version>1.0-SNAPSHOT</big-common.version>
-  		<activiti.version>5.22.0</activiti.version>
+  		<activiti.version>5.21.0</activiti.version>
   		
   		<!-- environment setting -->
 		<jdk.version>1.6</jdk.version>

@@ -1,32 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ include file="/WEB-INF/views/include/taglib.jsp"%>
-<html>
-<head>
-	<title>请假管理</title>
-	<script type="text/javascript">
-		
-	</script>
-</head>
-<body>
-	<ul class="nav nav-tabs">
-		<li><a href="${ctx}/oa/leave/">待办任务</a></li>
-		<li><a href="${ctx}/oa/leave/list">所有任务</a></li>
-		<shiro:hasPermission name="oa:leave:edit"><li class="active"><a href="${ctx}/oa/leave/form">请假申请</a></li></shiro:hasPermission>
-	</ul>
-<form name="userForm" action="javascript:void(0);" id="userForm" class="form form-horizontal">
-	<div class="form-group normal-form">
-    	<label class="col-xs-12 col-sm-2 control-label  pl-0 pr-5">头像：</label>
-    	<div id="uploader" style="position:relative" class="col-xs-12 col-sm-7 pl-0">	
-		</div>
-    	<div class="col-xs-12 col-sm-3 valid-msg"></div>
-	</div>
-	<div class="form-group normal-form">
-    	<label class="col-xs-12 col-sm-2 control-label  pl-0 pr-5">工号：</label>
-    	<div class="col-xs-12 col-sm-7 pl-0">
-			<input type="text" name="no" id="no" value="${user.no }" placeholder="用户工号" class="form-control input-text" datatype="*1-50" nullmsg="工号不能为空！"/>
-		</div>
-    	<div class="col-xs-12 col-sm-3 valid-msg"></div>
-	</div>
+<form name="leaveForm" action="javascript:void(0);" id="leaveForm" class="form form-horizontal">
 	<div class="form-group normal-form">
     	<label class="col-xs-12 col-sm-2 control-label  pl-0 pr-5">类型：</label>
     	<div class="col-xs-12 col-sm-7 pl-0">
@@ -65,13 +39,38 @@
 	<div class="form-group normal-form">
 		<label class="col-xs-12 col-sm-2 control-label pl-0 pr-5"></label>
 		<div class="col-xs-12 col-sm-7 pl-0">
-			<shiro:hasPermission name="sys:user:edit">
-				<button id="formSaveBtn" class="btn btn-info">提交</button>
-				<input class="btn btn-success" type="reset" value="重置">
-				<input id="formCancelBtn" class="btn btn-default" type="button" value="取消">
-			</shiro:hasPermission>
+			<button id="formSaveBtn" class="btn btn-info">提交</button>
+			<input class="btn btn-success" type="reset" value="重置">
+			<input id="formCancelBtn" class="btn btn-default" type="button" value="取消">
 		</div>
-	<div class="col-xs-12 col-sm-3 valid-msg"></div>
+		<div class="col-xs-12 col-sm-3 valid-msg"></div>
+	</div>
 </form>
-</body>
-</html>
+<script>
+	$(function(){
+		var leaveFormSvc = {
+			url: {
+				save : rootPath + "/oa/leave/save?t="+new Date().getTime()
+			},
+			fnCommit: function(){
+				var leaveJson = Svc.formToJson($("#leaveForm"));
+	        	Svc.AjaxForm.post(leaveFormSvc.url.save,leaveJson,function(response){
+	        		if(response == true){
+	        			layer.alert('保存成功！',function(index){});
+	        		}
+	        	});
+			}
+		}
+		// 取消按钮
+		$('#formCancelBtn').click(function(){
+			API.fnHideForm();
+		});
+		// 取消按钮
+		$('#formSaveBtn').click(function(){
+			leaveFormSvc.fnCommit();
+		});
+		
+		
+		
+	})
+</script>

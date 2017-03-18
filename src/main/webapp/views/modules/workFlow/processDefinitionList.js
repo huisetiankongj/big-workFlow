@@ -7,12 +7,12 @@ $(function() {
 				updateState :rootPath + "/workFlow/process/updateState?t="+new Date().getTime()
 			},
 			fnDeploy: function(){
-				processDefinitionSvc.fnprocessDefinitionModal('部署流程信息');
+				processDefinitionSvc.fnprocessDefinitionModal('閮ㄧ讲娴佺▼淇℃伅');
 			},
 			fnDelete: function(info){
 				Svc.AjaxJson.post(processDefinitionSvc.url.del+"&deploymentId="+info.deploymentId,{},function(response){
 					if(response){
-						layer.msg('操作成功！');
+						layer.msg('鎿嶄綔鎴愬姛锛�);
 						processDefinitionTable.fnDraw();
 					}else{
 						layer.alert(response.join('<br/>'));
@@ -23,7 +23,7 @@ $(function() {
 				var url = processDefinitionSvc.url.updateState+"&state="+state+"&processDefinitionId="+id;
 				Svc.AjaxForm.post(url,{},function(response){
 					if(response){
-						layer.msg('操作成功！');
+						layer.msg('鎿嶄綔鎴愬姛锛�);
 						processDefinitionTable.fnDraw();
 					}else{
 						layer.alert(response.join('<br/>'));
@@ -37,13 +37,13 @@ $(function() {
 				});
 			},
 			fnRegisterEvent: function(){
-				//搜索按钮
+				//鎼滅储鎸夐挳
 				$("#searchBtn").click(function(){
 					var params = Svc.formToJson($("#processDefinitionSearchForm")),hospital={};
 					var hospitalId=$("#hospitalId").val();
 					hospitalId&&(hospital.id = hospitalId);
 					hospital.id&&(params.hospital = hospital);
-					//资料修改审核
+					//璧勬枡淇敼瀹℃牳
 					if(params.state=='11'){
 						delete params.state;
 						params.editState='1';
@@ -53,19 +53,19 @@ $(function() {
 				});
 				
 				$("#processDefinitionSearchForm select.select2").select2();
-				//重置按钮
+				//閲嶇疆鎸夐挳
 				$("#resetBtn").click(function(){
 					Svc.resetForm($("#processDefinitionSearchForm"));
 				});
 			}
 	}
 	var aButtons =[
-	  		        { sExtends: "tiny", sButtonClass:"btn btn-success btn-sm", sButtonText: "部署", fnClick: function(nButton, oConfig) {
+	  		        { sExtends: "tiny", sButtonClass:"btn btn-success btn-sm", sButtonText: "閮ㄧ讲", fnClick: function(nButton, oConfig) {
 			         	 	processDefinitionSvc.fnDeploy();
 			        }}
 			       ];
 		             
-	//---------------------------------------流程定义列表------------------------------------------------
+	//---------------------------------------娴佺▼瀹氫箟鍒楄〃------------------------------------------------
 	var processDefinitionTable = $('#datatables_processDefinition').dataTable({
 			sAjaxSource: processDefinitionSvc.url.list,
 			fnServerData: fnServer(),
@@ -75,35 +75,35 @@ $(function() {
 			aoColumnDefs: [
 					{ aTargets: [ 0 ], mData: "id", sClass: "text-center", sTitle: "<input type='checkbox' class='TableCheckall'>",bSortable: false, sWidth: "20px"},
 					{ aTargets: [ 1 ], mDataProp: "deploymentId", sTitle: "DeploymentId"},
-					{ aTargets: [ 2 ], mDataProp: "deploymentName", sTitle: "名称"},
+					{ aTargets: [ 2 ], mDataProp: "deploymentName", sTitle: "鍚嶇О"},
 					{ aTargets: [ 3 ], mDataProp: "key", sTitle: "KEY"},
-					{ aTargets: [ 4 ], mDataProp: "version", sTitle: "版本号"},
+					{ aTargets: [ 4 ], mDataProp: "version", sTitle: "鐗堟湰鍙�},
 					{ aTargets: [ 5 ], mDataProp: "resourceName", sTitle: "XML"},
-					{ aTargets: [ 6 ], mDataProp: "diagramResourceName", sTitle: "图片"},
-					{ aTargets: [ 7 ], mDataProp: "suspended",sTitle: "是否挂起",mData:function(data){
+					{ aTargets: [ 6 ], mDataProp: "diagramResourceName", sTitle: "鍥剧墖"},
+					{ aTargets: [ 7 ], mDataProp: "suspended",sTitle: "鏄惁鎸傝捣",mData:function(data){
 						var spanClass = "label-danger",
-							spanText = "挂起",
+							spanText = "鎸傝捣",
 							state = "0";
 						if(data.suspended){
 							spanClass= "label-success";
-							spanText = "激活";
+							spanText = "婵�椿";
 							state = "1";
 						}	
 							
 						return '<span class="activeA label ticket-label '+spanClass+'" data-state="'+state+'" data-id="'+data.id+'">'+spanText+'</span>';
 					}},
-					{ aTargets: [ 8 ], mDataProp: "deploymentTime",sTitle: "部署时间"},
-					{ aTargets: [ 9 ], sTitle: "操作",mData:function(data){
+					{ aTargets: [ 8 ], mDataProp: "deploymentTime",sTitle: "閮ㄧ讲鏃堕棿"},
+					{ aTargets: [ 9 ], sTitle: "鎿嶄綔",mData:function(data){
 						var buttons = [];
 						$.each(processDefinitionTable.permission,function(i,perm){
 							switch(perm){
 							case 'xfjk:doctor:edit':
-								buttons.push('<a class="Item-Del" href="javascript:;"><i class="fa fa-del"></i>删除</a>');
-								buttons.push('<a class="Item-Convert" href="javascript:;"><i class="fa fa-del"></i>转换为Model</a>');
+								buttons.push('<a class="Item-Del" href="javascript:;"><i class="fa fa-del"></i>鍒犻櫎</a>');
+								buttons.push('<a class="Item-Convert" href="javascript:;"><i class="fa fa-del"></i>杞崲涓篗odel</a>');
   								break;
 							case 'permission:all':
-								buttons.push('<a class="Item-Del" href="javascript:;"><i class="fa fa-del"></i>删除</a>');
-								buttons.push('<a class="Item-Convert" href="javascript:;"><i class="fa fa-del"></i>转换为Model</a>');
+								buttons.push('<a class="Item-Del" href="javascript:;"><i class="fa fa-del"></i>鍒犻櫎</a>');
+								buttons.push('<a class="Item-Convert" href="javascript:;"><i class="fa fa-del"></i>杞崲涓篗odel</a>');
 							}
 						});
 						return buttons.join('&nbsp;&nbsp;');
@@ -120,7 +120,7 @@ $(function() {
 			drawCallback: function( settings ){
 				$(".Item-Del").click(function(){
 					var info = processDefinitionTable.fnGetData($(this).parents("tr"));
-					layer.confirm('确定删除已勾选的流程吗？', function(index){
+					layer.confirm('纭畾鍒犻櫎宸插嬀閫夌殑娴佺▼鍚楋紵', function(index){
 						layer.close(index);
 			        	processDefinitionSvc.fnDelete(info);
 					});

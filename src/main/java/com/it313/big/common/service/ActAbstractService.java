@@ -1,4 +1,4 @@
-package com.it313.big.common.web;
+package com.it313.big.common.service;
 
 import org.activiti.engine.FormService;
 import org.activiti.engine.HistoryService;
@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.it313.big.common.service.BaseService;
 
-public abstract class ActAbstractController extends BaseController{
+public abstract class ActAbstractService extends BaseService{
 
 	/**
 	 * 日志对象

@@ -12,8 +12,10 @@
   <context:property-placeholder ignore-unresolvable="true" location="classpath:big*.properties" />	
   <util:properties id="BIG_PROPERTIES" location="classpath:big.properties" local-override="true"/>
 
+
   <bean id="processEngineConfiguration" class="org.activiti.spring.SpringProcessEngineConfiguration">
   		<property name="dataSource" ref="dataSource" />
+  		<property name="transactionManager" ref="transactionManager" />
   		<property name="databaseSchemaUpdate" value="${activiti.databaseSchemaUpdate}" />
   		<property name="tablePrefixIsSchema" value="${activiti.tablePrefixIsSchema}" />
   		<property name="databaseTablePrefix" value="${activiti.tablePrefix}." />
@@ -22,7 +24,7 @@
   		<property name="history" value="full" /><!-- 历史记录保存模式 -->
 
 		<!-- UUID作为主键生成策略 -->
-		<property name="idGenerator" ref="idGen" />
+		<property name="idGenerator" ref="idGenExt" />
 		
 		<!-- 生成流程图的字体 -->
 		<property name="activityFontName" value="${activiti.diagram.activityFontName}"/>
@@ -39,16 +41,16 @@
   		
   </bean>
 	
-  <bean id="processEngine" class="org.activiti.spring.ProcessEngineFactoryBean">
-        <property name="processEngineConfiguration" ref="processEngineConfiguration"/>
+  <bean id="processEngineFactory" class="org.activiti.spring.ProcessEngineFactoryBean">
+		<property name="processEngineConfiguration" ref="processEngineConfiguration" />
   </bean>
-  
-  <bean id="repositoryService" factory-bean="processEngine" factory-method="getRepositoryService"/>
-  <bean id="runtimeService" factory-bean="processEngine" factory-method="getRuntimeService"/>
-  <bean id="formService" factory-bean="processEngine" factory-method="getFormService"/>
-  <bean id="identityService" factory-bean="processEngine" factory-method="getIdentityService"/>
-  <bean id="taskService" factory-bean="processEngine" factory-method="getTaskService"/>
-  <bean id="historyService" factory-bean="processEngine" factory-method="getHistoryService"/>
-  <bean id="managementService" factory-bean="processEngine" factory-method="getManagementService"/>
+	
+  <bean id="repositoryService" factory-bean="processEngineFactory" factory-method="getRepositoryService"/>
+  <bean id="runtimeService" factory-bean="processEngineFactory" factory-method="getRuntimeService"/>
+  <bean id="formService" factory-bean="processEngineFactory" factory-method="getFormService"/>
+  <bean id="identityService" factory-bean="processEngineFactory" factory-method="getIdentityService"/>
+  <bean id="taskService" factory-bean="processEngineFactory" factory-method="getTaskService"/>
+  <bean id="historyService" factory-bean="processEngineFactory" factory-method="getHistoryService"/>
+  <bean id="managementService" factory-bean="processEngineFactory" factory-method="getManagementService"/>
   
 </beans>
