@@ -12,6 +12,7 @@ import org.activiti.engine.task.Task;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.it313.big.common.entity.ActBaseEntity;
 import com.it313.big.common.persistence.BaseEntity;
 import com.it313.big.common.utils.StringUtils;
 import com.it313.big.common.utils.TimeUtils;
@@ -21,7 +22,7 @@ import com.it313.big.modules.act.utils.Variable;
  * @author ThinkGem
  * @version 2013-11-03
  */
-public class Act extends BaseEntity<Act> {
+public class Act extends ActBaseEntity<Act> {
 	
 	private static final long serialVersionUID = 1L;
 
@@ -295,9 +296,9 @@ public class Act extends BaseEntity<Act> {
 		return vars;
 	}
 
-	public void setVars(Variable vars) {
+/*	public void setVars(Variable vars) {
 		this.vars = vars;
-	}
+	}*/
 	
 	/**
 	 * 通过Map设置流程变量值
@@ -363,16 +364,6 @@ public class Act extends BaseEntity<Act> {
 	 */
 	public boolean isFinishTask(){
 		return "finish".equals(status) || StringUtils.isBlank(taskId);
-	}
-
-	@Override
-	public void preInsert() {
-		
-	}
-
-	@Override
-	public void preUpdate() {
-		
 	}
 
 }

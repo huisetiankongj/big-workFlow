@@ -54,7 +54,7 @@
 			},
 			fnCommit: function(){
 				var leaveJson = Svc.formToJson($("#leaveForm"));
-	        	Svc.AjaxForm.post(leaveFormSvc.url.save,leaveJson,function(response){
+	        	Svc.AjaxJson.post(leaveFormSvc.url.save,leaveJson,function(response){
 	        		if(response == true){
 	        			layer.alert('保存成功！',function(index){});
 	        		}

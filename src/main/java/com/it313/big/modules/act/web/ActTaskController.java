@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.it313.big.common.web.BaseController;
 import com.it313.big.modules.act.entity.Act;
 import com.it313.big.modules.act.service.ActTaskService;
+import com.it313.big.modules.act.utils.ActUtils;
 import com.it313.big.modules.workFlow.entity.SelfProcessDefinition;
 
 @Controller
@@ -34,13 +35,39 @@ public class ActTaskController extends BaseController{
 	}
 	
 	/**
+	 * 获取流程表单
+	 * @param taskId	任务ID
+	 * @param taskName	任务名称
+	 * @param taskDefKey 任务环节标识
+	 * @param procInsId 流程实例ID
+	 * @param procDefId 流程定义ID
+	 */
+	/*@RequestMapping(value = "form")
+	public String form(Act act, HttpServletRequest request, Model model){
+		// 获取流程XML上的表单KEY
+		String formKey = actTaskService.getFormKey(act.getProcDefId(), act.getTaskDefKey());
+
+		// 获取流程实例对象
+		if (act.getProcInsId() != null){
+			act.setProcIns(actTaskService.getProcIns(act.getProcInsId()));
+		}
+		
+		return "redirect:" + ActUtils.getFormUrl(formKey, act);
+		
+//		// 传递参数到视图
+//		model.addAttribute("act", act);
+//		model.addAttribute("formUrl", formUrl);
+//		return "modules/act/actTaskForm";
+	}*/
+	
+	/**
 	 * 流程列表
 	 * @param category 流程分类
 	 */
 	@RequestMapping(value = "findProcessList")
 	@ResponseBody
-	public Object findProcessList(@RequestBody SelfProcessDefinition pageMap) {
-		return actTaskService.processList(pageMap.getPaginate(),pageMap.getCategory());
+	public Object findProcessList(@RequestBody Act act) {
+		return actTaskService.processList(act,"");
 	}
 	
 	/**
@@ -61,8 +88,7 @@ public class ActTaskController extends BaseController{
 	@RequestMapping(value = "findToDoList")
 	@ResponseBody
 	public Object findToDoList(@RequestBody Act act) {
-		List<Act> list = actTaskService.todoList(act);
-		return list;
+		return actTaskService.todoList(act);
 	}
 	
 	

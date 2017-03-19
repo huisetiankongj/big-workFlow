@@ -2,35 +2,10 @@ $(function() {
 	var processDefinitionSvc = {
 			url: {
 				list: rootPath + "/act/task/findProcessList?t="+new Date().getTime(),
-				form : rootPath + "/oa/leave/form?t="+new Date().getTime(),
-				updateState :rootPath + "/workFlow/process/updateState?t="+new Date().getTime()
-			},
-			fnDeploy: function(){
-				processDefinitionSvc.fnprocessDefinitionModal('部署流程信息');
+				form : rootPath + "/oa/leave/form?t="+new Date().getTime()
 			},
 			fnStart:function(){
 				processDefinitionSvc.fnprocessDefinitionModal('请假申请');
-			},
-			fnDelete: function(info){
-				Svc.AjaxJson.post(processDefinitionSvc.url.del+"&deploymentId="+info.deploymentId,{},function(response){
-					if(response){
-						layer.msg('操作成功！');
-						processDefinitionTable.fnDraw();
-					}else{
-						layer.alert(response.join('<br/>'));
-					}
-				});
-			},
-			fnActive: function(id,state){
-				var url = processDefinitionSvc.url.updateState+"&state="+state+"&processDefinitionId="+id;
-				Svc.AjaxForm.post(url,{},function(response){
-					if(response){
-						layer.msg('操作成功！');
-						processDefinitionTable.fnDraw();
-					}else{
-						layer.alert(response.join('<br/>'));
-					}
-				});
 			},
 			fnprocessDefinitionModal: function(title,info,url){
 				API.fnShowForm({
@@ -71,7 +46,7 @@ $(function() {
 			aoColumnDefs: [
 					{ aTargets: [ 0 ], mData: "id", sClass: "text-center", sTitle: "<input type='checkbox' class='TableCheckall'>",bSortable: false, sWidth: "20px"},
 					{ aTargets: [ 1 ], mDataProp: "category", sTitle: "流程分类",mRender:function(v){
-						v?v:"无";
+						return v?v:"无";
 					}},
 					{ aTargets: [ 2 ], mDataProp: "key", sTitle: "流程标识"},
 					{ aTargets: [ 3 ], mDataProp: "deploymentName", sTitle: "流程名称"},

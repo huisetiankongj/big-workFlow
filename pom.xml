@@ -10,7 +10,7 @@
   		<activiti.version>5.21.0</activiti.version>
   		
   		<!-- environment setting -->
-		<jdk.version>1.6</jdk.version>
+		<jdk.version>1.7</jdk.version>
 		<tomcat.version>2.2</tomcat.version>
 		<jetty.version>7.6.14.v20131031</jetty.version>
 		<webserver.port>8181</webserver.port>

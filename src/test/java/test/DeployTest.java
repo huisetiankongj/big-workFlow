@@ -36,7 +36,7 @@ public class DeployTest {
 	
 	//发布流程
 	private static void deployFlow() throws FileNotFoundException{
-		ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream("E:/workspace/big-workFlow/src/main/resources/act/deployments/leave.zip"));
+		ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream("D:/workspace/big-workFlow/src/main/resources/act/deployments/leave.zip"));
 		repositoryService.createDeployment()
 						 .name("请假流程")
 						 .addZipInputStream(zipInputStream)

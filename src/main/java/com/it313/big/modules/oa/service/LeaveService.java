@@ -40,7 +40,7 @@ public class LeaveService extends ActAbstractService {
 		identityService.setAuthenticatedUserId(leave.getCurrentUser().getLoginName());
 		
 		// 启动流程
-		String businessKey = leave.getId();
+		String businessKey = ActUtils.PD_LEAVE[0]+":"+leave.getId();
 		variables.put("type", "leave");
 		variables.put("busId", businessKey);
 		ProcessInstance processInstance = runtimeService.startProcessInstanceByKey(ActUtils.PD_LEAVE[0], businessKey, variables);
@@ -53,6 +53,10 @@ public class LeaveService extends ActAbstractService {
 		logger.debug("start process of {key={}, bkey={}, pid={}, variables={}}", new Object[] { 
 				ActUtils.PD_LEAVE[0], businessKey, processInstance.getId(), variables });
 		
+	}
+
+	public Leave get(String id) {
+		return leaveDao.get(id);
 	}
 		
 }

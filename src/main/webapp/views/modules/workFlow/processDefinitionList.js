@@ -1,34 +1,11 @@
 $(function() {
 	var processDefinitionSvc = {
 			url: {
-				list: rootPath + "/workFlow/process/list?t="+new Date().getTime(),
-				del: rootPath + "/workFlow/process/delete?t="+new Date().getTime(),
-				form : rootPath + "/workFlow/process/form?t="+new Date().getTime(),
-				updateState :rootPath + "/workFlow/process/updateState?t="+new Date().getTime()
+				list: rootPath + "/act/task/findProcessList?t="+new Date().getTime(),
+				form : rootPath + "/oa/leave/form?t="+new Date().getTime()
 			},
-			fnDeploy: function(){
-				processDefinitionSvc.fnprocessDefinitionModal('é–®ã„§è®²å¨´ä½ºâ–¼æ·‡â„ƒä¼…');
-			},
-			fnDelete: function(info){
-				Svc.AjaxJson.post(processDefinitionSvc.url.del+"&deploymentId="+info.deploymentId,{},function(response){
-					if(response){
-						layer.msg('é¿å¶„ç¶”é´æ„¬å§›é”›ï¿½);
-						processDefinitionTable.fnDraw();
-					}else{
-						layer.alert(response.join('<br/>'));
-					}
-				});
-			},
-			fnActive: function(id,state){
-				var url = processDefinitionSvc.url.updateState+"&state="+state+"&processDefinitionId="+id;
-				Svc.AjaxForm.post(url,{},function(response){
-					if(response){
-						layer.msg('é¿å¶„ç¶”é´æ„¬å§›é”›ï¿½);
-						processDefinitionTable.fnDraw();
-					}else{
-						layer.alert(response.join('<br/>'));
-					}
-				});
+			fnStart:function(){
+				processDefinitionSvc.fnprocessDefinitionModal('Çë¼ÙÉêÇë');
 			},
 			fnprocessDefinitionModal: function(title,info,url){
 				API.fnShowForm({
@@ -37,13 +14,13 @@ $(function() {
 				});
 			},
 			fnRegisterEvent: function(){
-				//é¼æ»…å‚¨é¸å¤æŒ³
+				//ËÑË÷°´Å¥
 				$("#searchBtn").click(function(){
 					var params = Svc.formToJson($("#processDefinitionSearchForm")),hospital={};
 					var hospitalId=$("#hospitalId").val();
 					hospitalId&&(hospital.id = hospitalId);
 					hospital.id&&(params.hospital = hospital);
-					//ç’§å‹¬æ¡æ·‡î†½æ•¼ç€¹â„ƒç‰³
+					//×ÊÁÏĞŞ¸ÄÉóºË
 					if(params.state=='11'){
 						delete params.state;
 						params.editState='1';
@@ -53,20 +30,14 @@ $(function() {
 				});
 				
 				$("#processDefinitionSearchForm select.select2").select2();
-				//é–²å¶‡ç–†é¸å¤æŒ³
+				//ÖØÖÃ°´Å¥
 				$("#resetBtn").click(function(){
 					Svc.resetForm($("#processDefinitionSearchForm"));
 				});
 			}
 	}
-	var aButtons =[
-	  		        { sExtends: "tiny", sButtonClass:"btn btn-success btn-sm", sButtonText: "é–®ã„§è®²", fnClick: function(nButton, oConfig) {
-			         	 	processDefinitionSvc.fnDeploy();
-			        }}
-			       ];
-		             
-	//---------------------------------------å¨´ä½ºâ–¼ç€¹æ°«ç®Ÿé’æ¥„ã€ƒ------------------------------------------------
-	var processDefinitionTable = $('#datatables_processDefinition').dataTable({
+	//---------------------------------------Á÷³Ì¶¨ÒåÁĞ±í------------------------------------------------
+	var processDefinitionTable = $('#datatables_process').dataTable({
 			sAjaxSource: processDefinitionSvc.url.list,
 			fnServerData: fnServer(),
 			oDTCheckbox: {
@@ -74,38 +45,18 @@ $(function() {
 		    },
 			aoColumnDefs: [
 					{ aTargets: [ 0 ], mData: "id", sClass: "text-center", sTitle: "<input type='checkbox' class='TableCheckall'>",bSortable: false, sWidth: "20px"},
-					{ aTargets: [ 1 ], mDataProp: "deploymentId", sTitle: "DeploymentId"},
-					{ aTargets: [ 2 ], mDataProp: "deploymentName", sTitle: "éšå¶‡Ğ"},
-					{ aTargets: [ 3 ], mDataProp: "key", sTitle: "KEY"},
-					{ aTargets: [ 4 ], mDataProp: "version", sTitle: "é—å Ÿæ¹°é™ï¿½},
-					{ aTargets: [ 5 ], mDataProp: "resourceName", sTitle: "XML"},
-					{ aTargets: [ 6 ], mDataProp: "diagramResourceName", sTitle: "é¥å‰§å¢–"},
-					{ aTargets: [ 7 ], mDataProp: "suspended",sTitle: "é„îˆšæƒé¸å‚æ£",mData:function(data){
-						var spanClass = "label-danger",
-							spanText = "é¸å‚æ£",
-							state = "0";
-						if(data.suspended){
-							spanClass= "label-success";
-							spanText = "å©µï¿½æ¤¿";
-							state = "1";
-						}	
-							
-						return '<span class="activeA label ticket-label '+spanClass+'" data-state="'+state+'" data-id="'+data.id+'">'+spanText+'</span>';
+					{ aTargets: [ 1 ], mDataProp: "category", sTitle: "Á÷³Ì·ÖÀà",mRender:function(v){
+						return v?v:"ÎŞ";
 					}},
-					{ aTargets: [ 8 ], mDataProp: "deploymentTime",sTitle: "é–®ã„§è®²éƒå •æ£¿"},
-					{ aTargets: [ 9 ], sTitle: "é¿å¶„ç¶”",mData:function(data){
+					{ aTargets: [ 2 ], mDataProp: "key", sTitle: "Á÷³Ì±êÊ¶"},
+					{ aTargets: [ 3 ], mDataProp: "deploymentName", sTitle: "Á÷³ÌÃû³Æ"},
+					
+					{ aTargets: [ 4 ], mDataProp: "diagramResourceName", sTitle: "Á÷³ÌÍ¼"},
+					{ aTargets: [ 5 ], mDataProp: "version", sTitle: "°æ±¾ºÅ"},
+					{ aTargets: [ 6 ], mDataProp: "deploymentTime",sTitle: "¸üĞÂÊ±¼ä"},
+					{ aTargets: [ 7 ], sTitle: "²Ù×÷",mData:function(data){
 						var buttons = [];
-						$.each(processDefinitionTable.permission,function(i,perm){
-							switch(perm){
-							case 'xfjk:doctor:edit':
-								buttons.push('<a class="Item-Del" href="javascript:;"><i class="fa fa-del"></i>é’çŠ»æ«</a>');
-								buttons.push('<a class="Item-Convert" href="javascript:;"><i class="fa fa-del"></i>æî„å´²æ¶“ç¯—odel</a>');
-  								break;
-							case 'permission:all':
-								buttons.push('<a class="Item-Del" href="javascript:;"><i class="fa fa-del"></i>é’çŠ»æ«</a>');
-								buttons.push('<a class="Item-Convert" href="javascript:;"><i class="fa fa-del"></i>æî„å´²æ¶“ç¯—odel</a>');
-							}
-						});
+						buttons.push('<a class="Item-start" href="javascript:;" data-id="'+data.id+'"><i class="fa fa-del"></i>Æô¶¯Á÷³Ì</a>');
 						return buttons.join('&nbsp;&nbsp;');
 					}}
 				],
@@ -113,24 +64,16 @@ $(function() {
 				sRowSelect: "single",
 				fnRowSelected:function(){
 				},
-				aButtons: aButtons
+				aButtons: []
 			},
 			initComplete: function( settings ){
 			},
 			drawCallback: function( settings ){
-				$(".Item-Del").click(function(){
-					var info = processDefinitionTable.fnGetData($(this).parents("tr"));
-					layer.confirm('çº­î†¼ç•¾é’çŠ»æ«å®¸æ’å¬€é–«å¤Œæ®‘å¨´ä½ºâ–¼éšæ¥‹ç´µ', function(index){
-						layer.close(index);
-			        	processDefinitionSvc.fnDelete(info);
-					});
-				});
-				
-				$(".activeA").click(function(){
+				$(".Item-start").click(function(){
 					var _this = $(this),
 						id = _this.attr("data-id"),
 						state = _this.attr("data-state");
-					processDefinitionSvc.fnActive(id,state);	
+					processDefinitionSvc.fnStart(id);	
 				})
 			}
 		});

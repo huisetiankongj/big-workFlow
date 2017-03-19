@@ -15,6 +15,7 @@ import com.it313.big.common.persistence.paginate.Paginate;
 import com.it313.big.common.service.ActAbstractService;
 import com.it313.big.common.utils.StringUtils;
 import com.it313.big.modules.act.entity.Act;
+import com.it313.big.modules.act.entity.SelfTask;
 import com.it313.big.modules.act.utils.ProcessDefCache;
 import com.it313.big.modules.sys.utils.UserUtils;
 import com.it313.big.modules.workFlow.entity.SelfProcessDefinition;
@@ -33,7 +34,7 @@ public class ActTaskService extends ActAbstractService{
 	 * 获取流程列表
 	 * @param category 流程分类
 	 */
-	public Paginate<SelfProcessDefinition> processList(Paginate<SelfProcessDefinition> page, String category) {
+	public Paginate<SelfProcessDefinition> processList(Act act, String category) {
 		ProcessDefinitionQuery processDefinitionQuery = repositoryService.createProcessDefinitionQuery()
 	    		.latestVersion().active().orderByProcessDefinitionKey().asc();
 		
@@ -43,10 +44,13 @@ public class ActTaskService extends ActAbstractService{
 		
 		long totalRows = processDefinitionQuery.count();
 		
+		int startRow = act.getPaginate().getStartRowNum();
+		int lastRow = act.getPaginate().getLastRowNum();
+		
 		List<SelfProcessDefinition> entryList = new ArrayList<SelfProcessDefinition>();
 		String[] ignore = {"deploymentName","deploymentTime"};
 		
-		List<ProcessDefinition> processDefinitionList = processDefinitionQuery.listPage(page.getStartRowNum(), page.getLastRowNum());
+		List<ProcessDefinition> processDefinitionList = processDefinitionQuery.listPage(startRow, lastRow);
 		
 		for(int i=0,len=processDefinitionList.size();i<len;i++){
 			SelfProcessDefinition e = new SelfProcessDefinition();
@@ -63,8 +67,11 @@ public class ActTaskService extends ActAbstractService{
 			entryList.add(e);
 		}
 		
-		page.setDatas(entryList);
+		Paginate<SelfProcessDefinition> page = new Paginate<SelfProcessDefinition>();
 		
+		page.setDatas(entryList);
+		page.setCurrentPage(act.getPaginate().getCurrentPage());
+		page.setRowsOfPage(act.getPaginate().getRowsOfPage());
 		int pageSize = page.getRowsOfPage();
 		int totalPage= (int) (totalRows%pageSize==0?totalRows/pageSize:totalRows/pageSize+1);
 		page.setTotalRows(totalRows);
@@ -73,7 +80,9 @@ public class ActTaskService extends ActAbstractService{
 		
 	}
 
-	public List<Act> todoList(Act act) {
+	public Paginate<SelfTask> todoList(Act act) {
+		Paginate<Act> page = act.getPaginate();
+		
 		String userId = UserUtils.getUser().getLoginName();//ObjectUtils.toString(UserUtils.getUser().getId());
 		
 		List<Act> result = new ArrayList<Act>();
@@ -82,62 +91,39 @@ public class ActTaskService extends ActAbstractService{
 		TaskQuery todoTaskQuery = taskService.createTaskQuery().taskAssignee(userId).active()
 				.includeProcessVariables().orderByTaskCreateTime().desc();
 		
+		long totalRows = todoTaskQuery.count();
 		// 设置查询条件
 		if (StringUtils.isNotBlank(act.getProcDefKey())){
 			todoTaskQuery.processDefinitionKey(act.getProcDefKey());
 		}
-		if (act.getBeginDate() != null){
+		/*if (act.getBeginDate() != null){
 			todoTaskQuery.taskCreatedAfter(act.getBeginDate());
 		}
 		if (act.getEndDate() != null){
 			todoTaskQuery.taskCreatedBefore(act.getEndDate());
 		}
-		
+		*/
+		String[] ignore = {"proDefName","proDefVersion","proDefId"};
+		List<SelfTask> selfTaskList = new ArrayList<SelfTask>();
 		// 查询列表
 		List<Task> todoList = todoTaskQuery.list();
 		for (Task task : todoList) {
-			Act e = new Act();
-			e.setTask(task);
-			e.setVars(task.getProcessVariables());
-//			e.setTaskVars(task.getTaskLocalVariables());
-//			System.out.println(task.getId()+"  =  "+task.getProcessVariables() + "  ========== " + task.getTaskLocalVariables());
-			e.setProcDef(ProcessDefCache.get(task.getProcessDefinitionId()));
-//			e.setProcIns(runtimeService.createProcessInstanceQuery().processInstanceId(task.getProcessInstanceId()).singleResult());
-//			e.setProcExecUrl(ActUtils.getProcExeUrl(task.getProcessDefinitionId()));
-			e.setStatus("todo");
-			result.add(e);
+			SelfTask selfTask = new SelfTask();
+			BeanUtils.copyProperties(task,selfTask,ignore);
+			ProcessDefinition pd = ProcessDefCache.get(task.getProcessDefinitionId());
+			selfTask.setProDefId(pd.getId());
+			selfTask.setProDefName(pd.getName());
+			selfTask.setProDefVersion(pd.getVersion());
+			selfTaskList.add(selfTask);
 		}
 		
-		// =============== 等待签收的任务  ===============
-		TaskQuery toClaimQuery = taskService.createTaskQuery().taskCandidateUser(userId)
-				.includeProcessVariables().active().orderByTaskCreateTime().desc();
+		Paginate<SelfTask> pages = new Paginate<SelfTask>(selfTaskList, page.getCurrentPage(), page.getRowsOfPage(), (int) totalRows, "1");
 		
-		// 设置查询条件
-		if (StringUtils.isNotBlank(act.getProcDefKey())){
-			toClaimQuery.processDefinitionKey(act.getProcDefKey());
-		}
-		if (act.getBeginDate() != null){
-			toClaimQuery.taskCreatedAfter(act.getBeginDate());
-		}
-		if (act.getEndDate() != null){
-			toClaimQuery.taskCreatedBefore(act.getEndDate());
-		}
-		
-		// 查询列表
-		List<Task> toClaimList = toClaimQuery.list();
-		for (Task task : toClaimList) {
-			Act e = new Act();
-			e.setTask(task);
-			e.setVars(task.getProcessVariables());
-//			e.setTaskVars(task.getTaskLocalVariables());
-//			System.out.println(task.getId()+"  =  "+task.getProcessVariables() + "  ========== " + task.getTaskLocalVariables());
-			e.setProcDef(ProcessDefCache.get(task.getProcessDefinitionId()));
-//			e.setProcIns(runtimeService.createProcessInstanceQuery().processInstanceId(task.getProcessInstanceId()).singleResult());
-//			e.setProcExecUrl(ActUtils.getProcExeUrl(task.getProcessDefinitionId()));
-			e.setStatus("claim");
-			result.add(e);
-		}
-		return result;
+		/*int pageSize = page.getRowsOfPage();
+		int totalPage= (int) (totalRows%pageSize==0?totalRows/pageSize:totalRows/pageSize+1);
+		page.setTotalRows(totalRows);
+		page.setTotalPages(totalPage);*/
+		return pages;
 	}
 	
 }
