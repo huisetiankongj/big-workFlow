@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.it313.big.common.utils.StringUtils;
 import com.it313.big.common.web.BaseController;
 import com.it313.big.modules.act.entity.Act;
 import com.it313.big.modules.act.service.ActTaskService;
@@ -42,11 +43,12 @@ public class ActTaskController extends BaseController{
 	 * @param procInsId 流程实例ID
 	 * @param procDefId 流程定义ID
 	 */
-	/*@RequestMapping(value = "form")
+	@RequestMapping(value = "form")
 	public String form(Act act, HttpServletRequest request, Model model){
 		// 获取流程XML上的表单KEY
 		String formKey = actTaskService.getFormKey(act.getProcDefId(), act.getTaskDefKey());
-
+		
+		formKey ="/oa/leave/leaveTask";
 		// 获取流程实例对象
 		if (act.getProcInsId() != null){
 			act.setProcIns(actTaskService.getProcIns(act.getProcInsId()));
@@ -58,7 +60,7 @@ public class ActTaskController extends BaseController{
 //		model.addAttribute("act", act);
 //		model.addAttribute("formUrl", formUrl);
 //		return "modules/act/actTaskForm";
-	}*/
+	}
 	
 	/**
 	 * 流程列表
@@ -91,5 +93,17 @@ public class ActTaskController extends BaseController{
 		return actTaskService.todoList(act);
 	}
 	
+	
+	/**
+	 * 获取流转历史列表
+	 * @param procInsId 流程实例
+	 * @param startAct 开始活动节点名称
+	 * @param endAct 结束活动节点名称
+	 */
+	@RequestMapping(value = "findHistoicFlow")
+	@ResponseBody
+	public Object findHistoicFlow(@RequestBody Act act, Model model){
+		return actTaskService.histoicFlowList(act, "", "");
+	}
 	
 }

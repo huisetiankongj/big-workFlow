@@ -20,6 +20,8 @@ private static final long serialVersionUID = 1L;
 	private String proDefName;//定义名称
 	private int proDefVersion;//定义版本
 	
+	private String processInstanceId;//实例id
+	
 	public String getName() {
 		return name;
 	}
@@ -73,6 +75,12 @@ private static final long serialVersionUID = 1L;
 	}
 	public void setTaskDefinitionKey(String taskDefinitionKey) {
 		this.taskDefinitionKey = taskDefinitionKey;
+	}
+	public String getProcessInstanceId() {
+		return processInstanceId;
+	}
+	public void setProcessInstanceId(String processInstanceId) {
+		this.processInstanceId = processInstanceId;
 	}
 	
 	

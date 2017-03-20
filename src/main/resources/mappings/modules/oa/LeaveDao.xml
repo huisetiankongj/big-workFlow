@@ -11,8 +11,8 @@
 	</sql>
 	
 	<sql id="leaveJoins">
-		JOIN sys_user u ON u.id = a.create_by
-		JOIN sys_office o ON o.id = u.office_id
+		JOIN ${@com.it313.big.common.persistence.BaseEntity@BIG_COMMON_TP}.sys_user u ON u.id = a.create_by
+		JOIN ${@com.it313.big.common.persistence.BaseEntity@BIG_COMMON_TP}.sys_office o ON o.id = u.office_id
     </sql>
     
     <select id="get" resultType="Leave">

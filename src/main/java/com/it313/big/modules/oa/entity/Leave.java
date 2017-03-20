@@ -4,9 +4,9 @@ import java.util.Map;
 
 import org.activiti.engine.runtime.ProcessInstance;
 
-import com.it313.big.common.persistence.DataEntity;
+import com.it313.big.common.persistence.ActEntity;
 
-public class Leave extends DataEntity<Leave>{
+public class Leave extends ActEntity<Leave>{
 
 	private static final long serialVersionUID = 1L;
 	private String reason; 	// 请假原因

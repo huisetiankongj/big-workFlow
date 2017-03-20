@@ -2,14 +2,14 @@ $(function() {
 	var taskSvc = {
 			url: {
 				list: rootPath + "/act/task/findToDoList?t="+new Date().getTime(),
-				form : rootPath + "/oa/leave/task?t="+new Date().getTime(),
+				form : rootPath + "/act/task/form?t="+new Date().getTime(),
 			},
 			fnTask: function(info){
 				taskSvc.fntaskModal('部署流程信息',info);
 			},
 			fntaskModal: function(title,info,url){
 				API.fnShowForm({
-					url: url?url:taskSvc.url.form+(info?('&id='+info.id):'')+(info?('&proDefId='+info.proDefId):'')+(info?('&taskDefinitionKey='+info.taskDefinitionKey):''),
+					url: url?url:taskSvc.url.form+(info?('&taskId='+info.taskId):'')+(info?('&proDefId='+info.proDefId):'')+(info?('&taskDefKey='+info.taskDefKey):'')+(info?('&procInsId='+info.procInsId):''),
 					title: title
 				});
 			},
@@ -57,7 +57,7 @@ $(function() {
 					{ aTargets: [ 6 ], mDataProp: "createTime",sTitle: "创建时间"},
 					{ aTargets: [ 7 ], sTitle: "操作",mData:function(data){
 						var buttons = [];
-						buttons.push('<a class="Item-task" href="javascript:;" data-id="'+data.id+'" data-taskDefinitionKey="'+data.taskDefinitionKey+'" data-proDefId="'+data.proDefId+'"><i class="fa fa-del"></i>办理</a>');
+						buttons.push('<a class="Item-task" href="javascript:;" data-taskId="'+data.id+'" data-taskDefKey="'+data.taskDefinitionKey+'" data-procInsId="'+data.processInstanceId+'" data-proDefId="'+data.proDefId+'"><i class="fa fa-del"></i>办理</a>');
 						return buttons.join('&nbsp;&nbsp;');
 					}}
 				],
@@ -72,12 +72,14 @@ $(function() {
 			drawCallback: function( settings ){
 				$(".Item-task").click(function(){
 					var _this = $(this),info={},
-						id = _this.attr("data-id"),
+						taskId = _this.attr("data-taskId"),
 						proDefId = _this.attr("data-proDefId"),
-						taskDefinitionKey = _this.attr("data-taskDefinitionKey");
-					info.id = id;
+						taskDefKey = _this.attr("data-taskDefKey"),
+						procInsId =  _this.attr("data-procInsId");
+					info.taskId = taskId;
 					info.proDefId = proDefId;	
-					info.taskDefinitionKey = taskDefinitionKey;	
+					info.taskDefKey = taskDefKey;	
+					info.procInsId = procInsId;	
 					taskSvc.fnTask(info);	
 				})
 			}

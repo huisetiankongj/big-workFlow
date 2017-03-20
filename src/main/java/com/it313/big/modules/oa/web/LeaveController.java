@@ -2,7 +2,6 @@ package com.it313.big.modules.oa.web;
 
 import java.util.Map;
 
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +14,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.fasterxml.jackson.databind.deser.Deserializers.Base;
 import com.google.common.collect.Maps;
 import com.it313.big.common.utils.StringUtils;
-import com.it313.big.common.web.ActAbstractController;
 import com.it313.big.common.web.BaseController;
 import com.it313.big.modules.oa.entity.Leave;
 import com.it313.big.modules.oa.service.LeaveService;
@@ -53,8 +50,8 @@ public class LeaveController extends BaseController{
 		return "modules/oa/leaveForm";
 	}
 	
-	@RequestMapping(value = {"task"})
-	public String auditForm(Leave leave, Model model) {
+	@RequestMapping(value = {"leaveTask"})
+	public String leaveTask(Leave leave, Model model) {
 		model.addAttribute("leave", leave);
 		return "modules/oa/leaveTask";
 	}
@@ -73,6 +70,24 @@ public class LeaveController extends BaseController{
 			logger.error("启动请假流程失败：", e);
 			return setErrorMsg("启动请假流程失败");
 		}
+		return Boolean.TRUE;
+	}
+	
+	/**
+	 * 工单执行（完成任务）
+	 * @param testAudit
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value = "saveAudit")
+	@ResponseBody
+	public Object saveAudit(Leave leave) {
+		if (StringUtils.isBlank(leave.getAct().getFlag())
+				|| StringUtils.isBlank(leave.getAct().getComment())){
+			
+			return setErrorMsg("请填写审核意见");
+		}
+		leaveService.auditSave(leave);
 		return Boolean.TRUE;
 	}
 	

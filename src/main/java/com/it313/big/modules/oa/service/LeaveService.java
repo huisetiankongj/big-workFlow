@@ -7,8 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.common.collect.Maps;
 import com.it313.big.common.service.ActAbstractService;
 import com.it313.big.common.utils.StringUtils;
+import com.it313.big.modules.act.service.ActTaskService;
 import com.it313.big.modules.act.utils.ActUtils;
 import com.it313.big.modules.oa.dao.LeaveDao;
 import com.it313.big.modules.oa.entity.Leave;
@@ -19,6 +21,9 @@ public class LeaveService extends ActAbstractService {
 
 	@Autowired
 	private LeaveDao leaveDao;
+	@Autowired
+	private ActTaskService actTaskService;
+	
 	
 	/**
 	 * 启动流程
@@ -57,6 +62,23 @@ public class LeaveService extends ActAbstractService {
 
 	public Leave get(String id) {
 		return leaveDao.get(id);
+	}
+
+	@Transactional(readOnly = false)
+	public void auditSave(Leave leave) {
+
+		// 设置意见
+		leave.getAct().setComment(("yes".equals(leave.getAct().getFlag())?"[同意] ":"[驳回] ")+leave.getAct().getComment());
+		
+		leave.preUpdate();
+		
+		// 对不同环节的业务逻辑进行操作
+		String taskDefKey = leave.getAct().getTaskDefKey();
+		// 提交流程任务
+		Map<String, Object> vars = Maps.newHashMap();
+		vars.put("pass", "yes".equals(leave.getAct().getFlag())? "1" : "0");
+		actTaskService.complete(leave.getAct().getTaskId(), leave.getAct().getProcInsId(), leave.getAct().getComment(), vars);
+
 	}
 		
 }
