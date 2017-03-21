@@ -126,7 +126,7 @@ public class ActTaskService extends ActAbstractService{
 			selfTaskList.add(selfTask);
 		}
 		
-		Paginate<SelfTask> pages = new Paginate<SelfTask>(selfTaskList, page.getCurrentPage(), page.getRowsOfPage(), (int) totalRows, "1");
+		Paginate<SelfTask> pages = new Paginate<SelfTask>(selfTaskList, page.getCurrentPage(), page.getRowsOfPage(), (int) totalRows, "");
 		
 		/*int pageSize = page.getRowsOfPage();
 		int totalPage= (int) (totalRows%pageSize==0?totalRows/pageSize:totalRows/pageSize+1);
@@ -135,7 +135,7 @@ public class ActTaskService extends ActAbstractService{
 		return pages;
 	}
 
-	public Paginate<HistoricActivityInstance> histoicFlowList( Act act, String startAct, String endAct){
+	public Paginate<Act> histoicFlowList( Act act, String startAct, String endAct){
 		Paginate<Act> page = act.getPaginate();
 		List<Act> actList = Lists.newArrayList();
 		HistoricActivityInstanceQuery hisQuery= historyService.createHistoricActivityInstanceQuery().processInstanceId(act.getProcInsId());
@@ -226,9 +226,9 @@ public class ActTaskService extends ActAbstractService{
 				}
 			}
 		}
-		
-		Paginate<HistoricActivityInstance> pages = new Paginate<HistoricActivityInstance>(list, page.getCurrentPage(), page.getRowsOfPage(), (int) totalRows, "1");
-		return pages;
+		page.setDatas(actList);
+		page.setTotalRows(totalRows);
+		return page;
 	}
 
 	/**

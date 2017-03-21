@@ -82,14 +82,14 @@
 		
 		var histoicFlowTable = $('#datatables_histoicFlow').dataTable({
 			sAjaxSource: leaveFormSvc.url.findHistoicFlow,
-			fnServerData: fnServer({}),
+			fnServerData: fnServer({"procInsId":"${leave.act.procInsId}"}),
 			oDTCheckbox: {
 		        iColIndex:0
 		    },
 			aoColumnDefs: [
-					{ aTargets: [ 0 ], mData: "id", sClass: "text-center", sTitle: "<input type='checkbox' class='TableCheckall'>",bSortable: false, sWidth: "20px"},
-					{ aTargets: [ 1 ], mDataProp: "activityName", sTitle: "执行环节",mRender:function(v){
-						return v?v:"无";
+					{ aTargets: [ 0 ], mData: "histIns.id", sClass: "text-center", sTitle: "<input type='checkbox' class='TableCheckall'>",bSortable: false, sWidth: "20px"},
+					{ aTargets: [ 1 ], mDataProp: "histIns", sTitle: "执行环节",mRender:function(v){
+						return v.activityName;
 					}},
 					{ aTargets: [ 2 ], mDataProp: "assigneeName", sTitle: "执行人"},
 					{ aTargets: [ 3 ], mDataProp: "startTime", sTitle: "开始时间",mRender:function(v){
@@ -97,7 +97,9 @@
 					}},
 					{ aTargets: [ 4 ], mDataProp: "endTime", sTitle: "结束时间"},
 					{ aTargets: [ 5 ], mDataProp: "comment", sTitle: "提交意见"},
-					{ aTargets: [ 6 ], mDataProp: "durationTime",sTitle: "任务历时"}
+					{ aTargets: [ 6 ], mDataProp: "histIns",sTitle: "任务历时",mRender:function(v){
+						return v.durationTime;
+					}}
 				],
 			oTableTools: {
 				sRowSelect: "single",

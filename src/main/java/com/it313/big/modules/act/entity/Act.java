@@ -133,9 +133,6 @@ public class Act extends ActBaseEntity<Act> {
 		this.procDef = procDef;
 	}
 	
-	public String getProcDefName() {
-		return procDef.getName();
-	}
 
 	@JsonIgnore
 	public ProcessInstance getProcIns() {
