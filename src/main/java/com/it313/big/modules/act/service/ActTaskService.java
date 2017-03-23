@@ -89,12 +89,13 @@ public class ActTaskService extends ActAbstractService{
 		
 	}
 
-	public Paginate<SelfTask> todoList(Act act) {
+	public Paginate<Act> todoList(Act act) {
 		Paginate<Act> page = act.getPaginate();
+		
+		List<Act> actList = Lists.newArrayList();
 		
 		String userId = UserUtils.getUser().getLoginName();//ObjectUtils.toString(UserUtils.getUser().getId());
 		
-		List<Act> result = new ArrayList<Act>();
 		
 		// =============== 已经签收的任务  ===============
 		TaskQuery todoTaskQuery = taskService.createTaskQuery().taskAssignee(userId).active()
@@ -112,27 +113,19 @@ public class ActTaskService extends ActAbstractService{
 			todoTaskQuery.taskCreatedBefore(act.getEndDate());
 		}
 		*/
-		String[] ignore = {"proDefName","proDefVersion","proDefId"};
-		List<SelfTask> selfTaskList = new ArrayList<SelfTask>();
 		// 查询列表
 		List<Task> todoList = todoTaskQuery.list();
 		for (Task task : todoList) {
-			SelfTask selfTask = new SelfTask();
-			BeanUtils.copyProperties(task,selfTask,ignore);
 			ProcessDefinition pd = ProcessDefCache.get(task.getProcessDefinitionId());
-			selfTask.setProDefId(pd.getId());
-			selfTask.setProDefName(pd.getName());
-			selfTask.setProDefVersion(pd.getVersion());
-			selfTaskList.add(selfTask);
+			Act a = new Act();
+			a.setTask(task);
+			a.setProcDef(pd);
+			actList.add(a);
 		}
 		
-		Paginate<SelfTask> pages = new Paginate<SelfTask>(selfTaskList, page.getCurrentPage(), page.getRowsOfPage(), (int) totalRows, "");
-		
-		/*int pageSize = page.getRowsOfPage();
-		int totalPage= (int) (totalRows%pageSize==0?totalRows/pageSize:totalRows/pageSize+1);
+		page.setDatas(actList);
 		page.setTotalRows(totalRows);
-		page.setTotalPages(totalPage);*/
-		return pages;
+		return page;
 	}
 
 	public Paginate<Act> histoicFlowList( Act act, String startAct, String endAct){

@@ -115,7 +115,6 @@ public class Act extends ActBaseEntity<Act> {
 		return null;
 	}
 	
-	@JsonIgnore
 	public Task getTask() {
 		return task;
 	}
@@ -124,7 +123,6 @@ public class Act extends ActBaseEntity<Act> {
 		this.task = task;
 	}
 
-	@JsonIgnore
 	public ProcessDefinition getProcDef() {
 		return procDef;
 	}
@@ -134,7 +132,6 @@ public class Act extends ActBaseEntity<Act> {
 	}
 	
 
-	@JsonIgnore
 	public ProcessInstance getProcIns() {
 		return procIns;
 	}
@@ -172,7 +169,6 @@ public class Act extends ActBaseEntity<Act> {
 		this.status = status;
 	}
 
-	@JsonIgnore
 	public HistoricTaskInstance getHistTask() {
 		return histTask;
 	}
@@ -181,7 +177,6 @@ public class Act extends ActBaseEntity<Act> {
 		this.histTask = histTask;
 	}
 
-	@JsonIgnore
 	public HistoricActivityInstance getHistIns() {
 		return histIns;
 	}

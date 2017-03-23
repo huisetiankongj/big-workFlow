@@ -13,7 +13,7 @@
 	<div class="form-group normal-form">
     	<label class="col-xs-12 col-sm-2 control-label  pl-0 pr-5">开始时间：</label>
     	<div class="col-xs-12 col-sm-7 pl-0">
-    		${leave.createDate}
+    		${leave.startTime}
 		</div>
 	</div>
 	<div class="form-group normal-form">
@@ -25,7 +25,7 @@
 	<div class="form-group normal-form">
     	<label class="col-xs-12 col-sm-2 control-label  pl-0 pr-5">请假原因：</label>
     	<div class="col-xs-12 col-sm-7 pl-0">
-    	${reason}
+    	${leave.reason}
 		</div>
 	</div>
 	<div class="form-group normal-form">
@@ -92,14 +92,14 @@
 						return v.activityName;
 					}},
 					{ aTargets: [ 2 ], mDataProp: "assigneeName", sTitle: "执行人"},
-					{ aTargets: [ 3 ], mDataProp: "startTime", sTitle: "开始时间",mRender:function(v){
-						return v?v:"无";
+					{ aTargets: [ 3 ], mDataProp: "histIns", sTitle: "开始时间",mRender:function(v){
+						return v.startTime;
 					}},
-					{ aTargets: [ 4 ], mDataProp: "endTime", sTitle: "结束时间"},
+					{ aTargets: [ 4 ], mDataProp: "histIns", sTitle: "结束时间",mRender:function(v){
+						return v.endTime?v.endTime:"";
+					}},
 					{ aTargets: [ 5 ], mDataProp: "comment", sTitle: "提交意见"},
-					{ aTargets: [ 6 ], mDataProp: "histIns",sTitle: "任务历时",mRender:function(v){
-						return v.durationTime;
-					}}
+					{ aTargets: [ 6 ], mDataProp: "durationTime",sTitle: "任务历时"}
 				],
 			oTableTools: {
 				sRowSelect: "single",

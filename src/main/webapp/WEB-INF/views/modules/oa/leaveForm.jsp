@@ -5,9 +5,9 @@
     	<label class="col-xs-12 col-sm-2 control-label  pl-0 pr-5">类型：</label>
     	<div class="col-xs-12 col-sm-7 pl-0">
 			<select name="leaveType" class="form-control select2" datatype="*" nullmsg="类型不能为空！">
-				<option value="1">病假</option>
-				<option value="2">年假</option>
-				<option value="3">产假</option>
+				<option value="病假">病假</option>
+				<option value="年假">年假</option>
+				<option value="产假">产假</option>
 			</select>
 		</div>
     	<div class="col-xs-12 col-sm-3 valid-msg"></div>
