@@ -2,22 +2,22 @@ package com.it313.big.common.entity;
 
 import java.io.Serializable;
 
-import com.it313.big.common.persistence.paginate.Paginate;
+import com.it313.big.common.persistence.paginate.ActPaginate;
 
 public class ActBaseEntity<T> implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
 	
-	protected Paginate<T> paginate;
+	protected ActPaginate<T> paginate;
 
-	public Paginate<T> getPaginate() {
+	public ActPaginate<T> getPaginate() {
 		if (paginate == null){
-			paginate = new Paginate<T>();
+			paginate = new ActPaginate<T>();
 		}
 		return paginate;
 	}
 	
-	public Paginate<T> setPage(Paginate<T> paginate) {
+	public ActPaginate<T> setPage(ActPaginate<T> paginate) {
 		this.paginate = paginate;
 		return paginate;
 	}

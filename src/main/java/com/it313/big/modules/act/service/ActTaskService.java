@@ -19,11 +19,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.it313.big.common.persistence.paginate.Paginate;
+import com.it313.big.common.persistence.paginate.ActPaginate;
 import com.it313.big.common.service.ActAbstractService;
 import com.it313.big.common.utils.StringUtils;
 import com.it313.big.modules.act.entity.Act;
-import com.it313.big.modules.act.entity.SelfTask;
 import com.it313.big.modules.act.utils.ProcessDefCache;
 import com.it313.big.modules.sys.entity.User;
 import com.it313.big.modules.sys.utils.UserUtils;
@@ -43,7 +42,7 @@ public class ActTaskService extends ActAbstractService{
 	 * 获取流程列表
 	 * @param category 流程分类
 	 */
-	public Paginate<SelfProcessDefinition> processList(Act act, String category) {
+	public ActPaginate<SelfProcessDefinition> processList(Act act, String category) {
 		ProcessDefinitionQuery processDefinitionQuery = repositoryService.createProcessDefinitionQuery()
 	    		.latestVersion().active().orderByProcessDefinitionKey().asc();
 		
@@ -76,7 +75,7 @@ public class ActTaskService extends ActAbstractService{
 			entryList.add(e);
 		}
 		
-		Paginate<SelfProcessDefinition> page = new Paginate<SelfProcessDefinition>();
+		ActPaginate<SelfProcessDefinition> page = new ActPaginate<SelfProcessDefinition>();
 		
 		page.setDatas(entryList);
 		page.setCurrentPage(act.getPaginate().getCurrentPage());
@@ -89,8 +88,8 @@ public class ActTaskService extends ActAbstractService{
 		
 	}
 
-	public Paginate<Act> todoList(Act act) {
-		Paginate<Act> page = act.getPaginate();
+	public ActPaginate<Act> todoList(Act act) {
+		ActPaginate<Act> page = act.getPaginate();
 		
 		List<Act> actList = Lists.newArrayList();
 		
@@ -101,7 +100,6 @@ public class ActTaskService extends ActAbstractService{
 		TaskQuery todoTaskQuery = taskService.createTaskQuery().taskAssignee(userId).active()
 				.includeProcessVariables().orderByTaskCreateTime().desc();
 		
-		long totalRows = todoTaskQuery.count();
 		// 设置查询条件
 		if (StringUtils.isNotBlank(act.getProcDefKey())){
 			todoTaskQuery.processDefinitionKey(act.getProcDefKey());
@@ -113,8 +111,13 @@ public class ActTaskService extends ActAbstractService{
 			todoTaskQuery.taskCreatedBefore(act.getEndDate());
 		}
 		*/
+		long totalRows = todoTaskQuery.count();
+		
+		int startRow = act.getPaginate().getStartRowNum();
+		int lastRow = act.getPaginate().getLastRowNum();
 		// 查询列表
-		List<Task> todoList = todoTaskQuery.list();
+		List<Task> todoList = todoTaskQuery.listPage(startRow,lastRow);
+		
 		for (Task task : todoList) {
 			ProcessDefinition pd = ProcessDefCache.get(task.getProcessDefinitionId());
 			Act a = new Act();
@@ -128,8 +131,8 @@ public class ActTaskService extends ActAbstractService{
 		return page;
 	}
 
-	public Paginate<Act> histoicFlowList( Act act, String startAct, String endAct){
-		Paginate<Act> page = act.getPaginate();
+	public ActPaginate<Act> histoicFlowList( Act act, String startAct, String endAct){
+		ActPaginate<Act> page = act.getPaginate();
 		List<Act> actList = Lists.newArrayList();
 		HistoricActivityInstanceQuery hisQuery= historyService.createHistoricActivityInstanceQuery().processInstanceId(act.getProcInsId());
 		

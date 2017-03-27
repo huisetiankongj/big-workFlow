@@ -33,7 +33,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.it313.big.common.persistence.paginate.Paginate;
+import com.it313.big.common.persistence.paginate.ActPaginate;
 import com.it313.big.common.web.ActAbstractController;
 import com.it313.big.modules.workFlow.entity.SelfProcessDefinition;
 import com.it313.big.modules.workFlow.utils.BeanUtils;
@@ -60,7 +60,7 @@ public class ActivitiController extends ActAbstractController{
 	@RequestMapping(value = {"process/list"})
 	@ResponseBody
 	public Object list(@RequestBody SelfProcessDefinition pageMap){
-		Paginate<SelfProcessDefinition> paginate = (Paginate<SelfProcessDefinition>)pageMap.getPaginate();
+		ActPaginate<SelfProcessDefinition> paginate = (ActPaginate<SelfProcessDefinition>)pageMap.getPaginate();
 		ProcessDefinitionQuery processDefinitionQuery = repositoryService.createProcessDefinitionQuery();
 		List<ProcessDefinition> list = repositoryService.createProcessDefinitionQuery()
 														.orderByProcessDefinitionVersion().asc()
@@ -84,7 +84,7 @@ public class ActivitiController extends ActAbstractController{
 			}
 			entryList.add(e);
 		}
-		Paginate<SelfProcessDefinition> selfProcessDefinitionList = new Paginate<SelfProcessDefinition>(entryList,paginate.getCurrentPage(), paginate.getRowsOfPage(),totalRow,paginate.getMenuId());
+		ActPaginate<SelfProcessDefinition> selfProcessDefinitionList = new ActPaginate<SelfProcessDefinition>(entryList,paginate.getCurrentPage(), paginate.getRowsOfPage(),totalRow,paginate.getMenuId());
 		return selfProcessDefinitionList;
 	}
 	

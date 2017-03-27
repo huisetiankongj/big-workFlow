@@ -1,23 +1,23 @@
 $(function() {
-	var processDefinitionSvc = {
+	var modelSvc = {
 			url: {
-				list: rootPath + "/act/task/findProcessList?t="+new Date().getTime(),
+				list: rootPath + "/act/model/findModelList?t="+new Date().getTime(),
 				form : rootPath + "/oa/leave/form?t="+new Date().getTime(),
 				resource:rootPath + "/act/process/resource/read?t="+new Date().getTime()
 			},
 			fnStart:function(){
-				processDefinitionSvc.fnprocessDefinitionModal('请假申请');
+				modelSvc.fnmodelModal('请假申请');
 			},
-			fnprocessDefinitionModal: function(title,info,url){
+			fnmodelModal: function(title,info,url){
 				API.fnShowForm({
-					url: url?url:processDefinitionSvc.url.form+(info?('&id='+info.id):''),
+					url: url?url:modelSvc.url.form+(info?('&id='+info.id):''),
 					title: title
 				});
 			},
 			fnRegisterEvent: function(){
 				//搜索按钮
 				$("#searchBtn").click(function(){
-					var params = Svc.formToJson($("#processDefinitionSearchForm")),hospital={};
+					var params = Svc.formToJson($("#modelSearchForm")),hospital={};
 					var hospitalId=$("#hospitalId").val();
 					hospitalId&&(hospital.id = hospitalId);
 					hospital.id&&(params.hospital = hospital);
@@ -26,20 +26,20 @@ $(function() {
 						delete params.state;
 						params.editState='1';
 					}
-					processDefinitionTable.reDrawParams = params;
-					processDefinitionTable.fnDraw();
+					modelTable.reDrawParams = params;
+					modelTable.fnDraw();
 				});
 				
-				$("#processDefinitionSearchForm select.select2").select2();
+				$("#modelSearchForm select.select2").select2();
 				//重置按钮
 				$("#resetBtn").click(function(){
-					Svc.resetForm($("#processDefinitionSearchForm"));
+					Svc.resetForm($("#modelSearchForm"));
 				});
 			}
 	}
 	//---------------------------------------流程定义列表------------------------------------------------
-	var processDefinitionTable = $('#datatables_process').dataTable({
-			sAjaxSource: processDefinitionSvc.url.list,
+	var modelTable = $('#datatables_model').dataTable({
+			sAjaxSource: modelSvc.url.list,
 			fnServerData: fnServer(),
 			oDTCheckbox: {
 		        iColIndex:0
@@ -49,16 +49,18 @@ $(function() {
 					{ aTargets: [ 1 ], mDataProp: "category", sTitle: "流程分类",mRender:function(v){
 						return v?v:"无";
 					}},
-					{ aTargets: [ 2 ], mDataProp: "key", sTitle: "流程标识"},
-					{ aTargets: [ 3 ], mDataProp: "deploymentName", sTitle: "流程名称"},
-					{ aTargets: [ 4 ], sTitle: "流程图片",mData:function(data){
-						return '<a target="_blank" href="'+processDefinitionSvc.url.resource+'&procDefId='+data.id+'&resType=image">'+data.diagramResourceName+'</a>';
-					}},
+					{ aTargets: [ 2 ], mDataProp: "id", sTitle: "模型ID"},
+					{ aTargets: [ 3 ], mDataProp: "key", sTitle: "模型标识"},
+					{ aTargets: [ 4 ], mDataProp: "name", sTitle: "模型名称"},
 					{ aTargets: [ 5 ], mDataProp: "version", sTitle: "版本号"},
-					{ aTargets: [ 6 ], mDataProp: "deploymentTime",sTitle: "更新时间"},
-					{ aTargets: [ 7 ], sTitle: "操作",mData:function(data){
+					{ aTargets: [ 6 ], mDataProp: "createTime",sTitle: "创建时间"},
+					{ aTargets: [ 7 ], mDataProp: "lastUpdateTime",sTitle: "最后更新时间"},
+					{ aTargets: [ 8 ], sTitle: "操作",mData:function(data){
 						var buttons = [];
-						buttons.push('<a class="Item-start" href="javascript:;" data-id="'+data.id+'"><i class="fa fa-del"></i>启动流程</a>');
+						buttons.push('<a href="'+rootPath+'/act/process-editor/modeler.jsp?modelId=${model.id}" target="_blank">编辑</a>')
+						buttons.push('<a href="'+rootPath+'/act/model/deploy?id=${model.id}" target="_blank">部署</a>')
+						buttons.push('<a href="'+rootPath+'/export?id=${model.id}" target="_blank">导出</a>')
+						buttons.push('<a href="'+rootPath+'/delete?id=${model.id}" target="_blank">删除</a>')
 						return buttons.join('&nbsp;&nbsp;');
 					}}
 				],
@@ -75,10 +77,10 @@ $(function() {
 					var _this = $(this),
 						id = _this.attr("data-id"),
 						state = _this.attr("data-state");
-					processDefinitionSvc.fnStart(id);	
+					modelSvc.fnStart(id);	
 				})
 			}
 		});
 		
-	processDefinitionSvc.fnRegisterEvent();
+	modelSvc.fnRegisterEvent();
 });

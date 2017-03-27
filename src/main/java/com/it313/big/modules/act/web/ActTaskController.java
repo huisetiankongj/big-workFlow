@@ -1,9 +1,6 @@
 package com.it313.big.modules.act.web;
 
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -12,12 +9,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.it313.big.common.utils.StringUtils;
 import com.it313.big.common.web.BaseController;
 import com.it313.big.modules.act.entity.Act;
 import com.it313.big.modules.act.service.ActTaskService;
 import com.it313.big.modules.act.utils.ActUtils;
-import com.it313.big.modules.workFlow.entity.SelfProcessDefinition;
 
 @Controller
 @RequestMapping(value = "${adminPath}/act/task")
