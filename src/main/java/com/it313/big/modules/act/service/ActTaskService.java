@@ -1,6 +1,7 @@
 package com.it313.big.modules.act.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -42,49 +43,45 @@ public class ActTaskService extends ActAbstractService{
 	 * 获取流程列表
 	 * @param category 流程分类
 	 */
-	public ActPaginate<SelfProcessDefinition> processList(Act act, String category) {
-		ProcessDefinitionQuery processDefinitionQuery = repositoryService.createProcessDefinitionQuery()
-	    		.latestVersion().active().orderByProcessDefinitionKey().asc();
+	@SuppressWarnings("unchecked")
+	public ActPaginate<Map<String,Object>> processList(Map<String,Object> params, String category) {
 		
-		if (StringUtils.isNotEmpty(category)){
-	    	processDefinitionQuery.processDefinitionCategory(category);
-		}
-		
-		long totalRows = processDefinitionQuery.count();
-		
-		int startRow = act.getPaginate().getStartRowNum();
-		int lastRow = act.getPaginate().getLastRowNum();
-		
-		List<SelfProcessDefinition> entryList = new ArrayList<SelfProcessDefinition>();
-		String[] ignore = {"deploymentName","deploymentTime"};
-		
-		List<ProcessDefinition> processDefinitionList = processDefinitionQuery.listPage(startRow, lastRow);
-		
-		for(int i=0,len=processDefinitionList.size();i<len;i++){
-			SelfProcessDefinition e = new SelfProcessDefinition();
-			ProcessDefinition p = processDefinitionList.get(i);
-			try {
-				BeanUtils.copyProperties(p,e,ignore);
-				String deploymentId = p.getDeploymentId();
-		        Deployment deployment = repositoryService.createDeploymentQuery().deploymentId(deploymentId).singleResult();
-		        e.setDeploymentName(deployment.getName());
-		        e.setDeploymentTime(deployment.getDeploymentTime());
-			} catch (Exception e1) {
-				e1.printStackTrace();
+		try {
+			ActPaginate<Map<String,Object>> page = BeanUtils.map2Bean(new ActPaginate<Map<String,Object>>() ,(Map<String, ?>)params.get("paginate"));
+			ProcessDefinitionQuery processDefinitionQuery = repositoryService.createProcessDefinitionQuery()
+		    		.latestVersion().active().orderByProcessDefinitionKey().asc();
+			
+			if (StringUtils.isNotEmpty(category)){
+		    	processDefinitionQuery.processDefinitionCategory(category);
 			}
-			entryList.add(e);
+			
+			List<Map<String,Object>> entryList = new ArrayList<Map<String,Object>>();
+			page.setPage(processDefinitionQuery);
+			List<ProcessDefinition> processDefinitionList = (List<ProcessDefinition>) page.getDatas();
+			
+			
+			for(int i=0,len=processDefinitionList.size();i<len;i++){
+				Map<String,Object> e = new HashMap<String, Object>();
+				ProcessDefinition p = processDefinitionList.get(i);
+				String deploymentId = p.getDeploymentId();
+				Deployment deployment = repositoryService.createDeploymentQuery().deploymentId(deploymentId).singleResult();
+				e.put("id", p.getId());
+				e.put("category", p.getCategory());
+				e.put("key", p.getKey());
+				e.put("diagramResourceName", p.getDiagramResourceName());
+				e.put("version", p.getVersion());
+				e.put("deploymentTime", deployment.getDeploymentTime());
+				e.put("deploymentName", deployment.getName());
+				
+				entryList.add(e);
+			}
+			
+			page.setDatas(entryList);
+			return page;
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		
-		ActPaginate<SelfProcessDefinition> page = new ActPaginate<SelfProcessDefinition>();
-		
-		page.setDatas(entryList);
-		page.setCurrentPage(act.getPaginate().getCurrentPage());
-		page.setRowsOfPage(act.getPaginate().getRowsOfPage());
-		int pageSize = page.getRowsOfPage();
-		int totalPage= (int) (totalRows%pageSize==0?totalRows/pageSize:totalRows/pageSize+1);
-		page.setTotalRows(totalRows);
-		page.setTotalPages(totalPage);
-		return page;
+		return null;
 		
 	}
 
@@ -94,7 +91,6 @@ public class ActTaskService extends ActAbstractService{
 		List<Act> actList = Lists.newArrayList();
 		
 		String userId = UserUtils.getUser().getLoginName();//ObjectUtils.toString(UserUtils.getUser().getId());
-		
 		
 		// =============== 已经签收的任务  ===============
 		TaskQuery todoTaskQuery = taskService.createTaskQuery().taskAssignee(userId).active()

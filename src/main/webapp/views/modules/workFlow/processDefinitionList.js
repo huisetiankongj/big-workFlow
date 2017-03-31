@@ -5,7 +5,7 @@ $(function() {
 				form : rootPath + "/oa/leave/form?t="+new Date().getTime()
 			},
 			fnStart:function(){
-				processDefinitionSvc.fnprocessDefinitionModal('Çë¼ÙÉêÇë');
+				processDefinitionSvc.fnprocessDefinitionModal('è¯·å‡ç”³è¯·');
 			},
 			fnprocessDefinitionModal: function(title,info,url){
 				API.fnShowForm({
@@ -14,13 +14,13 @@ $(function() {
 				});
 			},
 			fnRegisterEvent: function(){
-				//ËÑË÷°´Å¥
+				//æœç´¢æŒ‰é’®
 				$("#searchBtn").click(function(){
 					var params = Svc.formToJson($("#processDefinitionSearchForm")),hospital={};
 					var hospitalId=$("#hospitalId").val();
 					hospitalId&&(hospital.id = hospitalId);
 					hospital.id&&(params.hospital = hospital);
-					//×ÊÁÏĞŞ¸ÄÉóºË
+					//èµ„æ–™ä¿®æ”¹å®¡æ ¸
 					if(params.state=='11'){
 						delete params.state;
 						params.editState='1';
@@ -30,13 +30,13 @@ $(function() {
 				});
 				
 				$("#processDefinitionSearchForm select.select2").select2();
-				//ÖØÖÃ°´Å¥
+				//é‡ç½®æŒ‰é’®
 				$("#resetBtn").click(function(){
 					Svc.resetForm($("#processDefinitionSearchForm"));
 				});
 			}
 	}
-	//---------------------------------------Á÷³Ì¶¨ÒåÁĞ±í------------------------------------------------
+	//---------------------------------------æµç¨‹å®šä¹‰åˆ—è¡¨------------------------------------------------
 	var processDefinitionTable = $('#datatables_process').dataTable({
 			sAjaxSource: processDefinitionSvc.url.list,
 			fnServerData: fnServer(),
@@ -44,19 +44,19 @@ $(function() {
 		        iColIndex:0
 		    },
 			aoColumnDefs: [
-					{ aTargets: [ 0 ], mData: "id", sClass: "text-center", sTitle: "<input type='checkbox' class='TableCheckall'>",bSortable: false, sWidth: "20px"},
-					{ aTargets: [ 1 ], mDataProp: "category", sTitle: "Á÷³Ì·ÖÀà",mRender:function(v){
-						return v?v:"ÎŞ";
+					{ aTargets: [ 0 ], mDataProp: "proDefId", sClass: "text-center", sTitle: "<input type='checkbox' class='TableCheckall'>",bSortable: false, sWidth: "20px"},
+					{ aTargets: [ 1 ], mDataProp: "category", sTitle: "æµç¨‹åˆ†ç±»",mRender:function(v){
+						return v?v:"æ— ";
 					}},
-					{ aTargets: [ 2 ], mDataProp: "key", sTitle: "Á÷³Ì±êÊ¶"},
-					{ aTargets: [ 3 ], mDataProp: "deploymentName", sTitle: "Á÷³ÌÃû³Æ"},
+					{ aTargets: [ 2 ], mDataProp: "key", sTitle: "æµç¨‹æ ‡è¯†"},
+					{ aTargets: [ 3 ], mDataProp: "deploymentName", sTitle: "æµç¨‹åç§°"},
 					
-					{ aTargets: [ 4 ], mDataProp: "diagramResourceName", sTitle: "Á÷³ÌÍ¼"},
-					{ aTargets: [ 5 ], mDataProp: "version", sTitle: "°æ±¾ºÅ"},
-					{ aTargets: [ 6 ], mDataProp: "deploymentTime",sTitle: "¸üĞÂÊ±¼ä"},
-					{ aTargets: [ 7 ], sTitle: "²Ù×÷",mData:function(data){
+					{ aTargets: [ 4 ], mDataProp: "diagramResourceName", sTitle: "æµç¨‹å›¾"},
+					{ aTargets: [ 5 ], mDataProp: "version", sTitle: "ç‰ˆæœ¬å·"},
+					{ aTargets: [ 6 ], mDataProp: "deploymentTime",sTitle: "æ›´æ–°æ—¶é—´"},
+					{ aTargets: [ 7 ], sTitle: "æ“ä½œ",mData:function(data){
 						var buttons = [];
-						buttons.push('<a class="Item-start" href="javascript:;" data-id="'+data.id+'"><i class="fa fa-del"></i>Æô¶¯Á÷³Ì</a>');
+						buttons.push('<a class="Item-start" href="javascript:;" data-id="'+data.proDefId+'"><i class="fa fa-del"></i>å¯åŠ¨æµç¨‹</a>');
 						return buttons.join('&nbsp;&nbsp;');
 					}}
 				],

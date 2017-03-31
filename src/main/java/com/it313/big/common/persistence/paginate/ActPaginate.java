@@ -2,8 +2,10 @@ package com.it313.big.common.persistence.paginate;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
-import com.github.pagehelper.Page;
+
+import org.activiti.engine.query.Query;
 import com.it313.big.modules.sys.utils.UserUtils;
 
 public class ActPaginate<T> implements Serializable {
@@ -45,7 +47,7 @@ public class ActPaginate<T> implements Serializable {
 	/**
 	 * 结果集，查询后得到
 	 */
-	private List<T> datas;
+	private List<?> datas;
 	/**
 	 * 当前用户操作权限
 	 */
@@ -63,7 +65,7 @@ public class ActPaginate<T> implements Serializable {
 	 * @param list          page结果
 	 * @param navigatePages 页码数量
 	 */
-	public ActPaginate(List list,int curPage,int pageSize, int totalRow,String menuId) {
+	public ActPaginate(List<?> list,int curPage,int pageSize, int totalRow,String menuId) {
 		this.currentPage = curPage;
 		this.rowsOfPage = pageSize;
 		this.totalRows = totalRow;
@@ -73,16 +75,15 @@ public class ActPaginate<T> implements Serializable {
 		this.permission = UserUtils.getCurrentPermission(menuId);	
 	}
 
-	public void setPage(org.activiti.engine.query.Query query) {
+	public void setPage(Query<?, ?> query) {
 		int totalRow = (int) query.count();
-		List list = query.listPage(this.startRowNum, this.lastRowNum);
+		List<?> list = query.listPage(this.startRowNum, 1);
 		this.totalRows = totalRow;
 		this.totalPages = totalRow%this.rowsOfPage==0?totalRow/this.rowsOfPage:totalRow/this.rowsOfPage+1;
 		this.datas = list;
 		this.size = list.size();
 		this.permission = UserUtils.getCurrentPermission(menuId);	
 	}
-	
 	
 	public ActPaginate() {
 		this.rowsOfPage = -1;
@@ -136,11 +137,11 @@ public class ActPaginate<T> implements Serializable {
 		this.maxRowNumber = maxRowNumber;
 	}
 
-	public List getDatas() {
+	public List<?> getDatas() {
 		return datas;
 	}
 
-	public void setDatas(List datas) {
+	public void setDatas(List<?> datas) {
 		this.datas = datas;
 	}
 
