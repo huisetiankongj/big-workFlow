@@ -1,5 +1,6 @@
 package com.it313.big.modules.act.web;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.it313.big.common.persistence.paginate.ThreadLocalPaginate;
+import com.it313.big.common.persistence.paginate.ThreadLocalActPaginate;
 import com.it313.big.common.web.BaseController;
 import com.it313.big.modules.act.entity.Act;
 import com.it313.big.modules.act.service.ActTaskService;
@@ -23,15 +24,6 @@ public class ActTaskController extends BaseController{
 	
 	@Autowired
 	private ActTaskService actTaskService;
-	
-	/**
-	 * 流程列表页面
-	 * @param category 流程分类
-	 */
-	@RequestMapping(value = "process/list")
-	public Object processList(Model model) {
-		return "modules/act/actTaskProcessList";
-	}
 	
 	/**
 	 * 获取流程表单
@@ -58,16 +50,6 @@ public class ActTaskController extends BaseController{
 //		model.addAttribute("act", act);
 //		model.addAttribute("formUrl", formUrl);
 //		return "modules/act/actTaskForm";
-	}
-	
-	/**
-	 * 流程列表
-	 * @param category 流程分类
-	 */
-	@RequestMapping(value = "findProcessList")
-	@ResponseBody
-	public Object findProcessList(@RequestBody Map<String,Object> params) {
-		return actTaskService.processList(params,"");
 	}
 	
 	/**

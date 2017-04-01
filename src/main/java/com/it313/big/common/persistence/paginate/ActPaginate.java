@@ -8,7 +8,7 @@ import java.util.Set;
 import org.activiti.engine.query.Query;
 import com.it313.big.modules.sys.utils.UserUtils;
 
-public class ActPaginate<T> implements Serializable {
+public class ActPaginate implements Serializable {
 	private static final long serialVersionUID = 3119497648435553085L;
 	/**
 	 * 每页多少行
@@ -59,6 +59,19 @@ public class ActPaginate<T> implements Serializable {
 	//当前页的数量 <= rowsOfPage，该属性来自ArrayList的size属性
     private int size;
 	
+    public ActPaginate(int currentPage,int rowsOfPage,int startRowNum,int lastRowNum){
+    	this.currentPage = currentPage;
+    	this.rowsOfPage = rowsOfPage;
+    	this.startRowNum = startRowNum;
+    	this.lastRowNum = lastRowNum;
+    }
+    public ActPaginate(int currentPage,int rowsOfPage,int startRowNum,int lastRowNum,String menuId){
+    	this.currentPage = currentPage;
+    	this.rowsOfPage = rowsOfPage;
+    	this.startRowNum = startRowNum;
+    	this.lastRowNum = lastRowNum;
+    	this.menuId = menuId;
+    }
 	/**
 	 * 包装Page对象，因为直接返回Page对象，在JSON处理以及其他情况下会被当成List来处理，
 	 * 而出现一些问题。
@@ -77,7 +90,7 @@ public class ActPaginate<T> implements Serializable {
 
 	public void setPage(Query<?, ?> query) {
 		int totalRow = (int) query.count();
-		List<?> list = query.listPage(this.startRowNum, 1);
+		List<?> list = query.listPage(this.startRowNum, this.lastRowNum);
 		this.totalRows = totalRow;
 		this.totalPages = totalRow%this.rowsOfPage==0?totalRow/this.rowsOfPage:totalRow/this.rowsOfPage+1;
 		this.datas = list;

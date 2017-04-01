@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -31,6 +32,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
 import com.it313.big.common.persistence.Page;
 import com.it313.big.common.persistence.paginate.ActPaginate;
+import com.it313.big.common.persistence.paginate.ThreadLocalActPaginate;
 import com.it313.big.common.service.BaseService;
 import com.it313.big.modules.act.entity.Act;
 import com.it313.big.modules.act.entity.ModelEntry;
@@ -54,19 +56,15 @@ public class ActModelService extends BaseService {
 	/**
 	 * 流程模型列表
 	 */
-	public ActPaginate<ModelEntry> modelList(ModelEntry modelEntry) {
-		
-		ActPaginate<ModelEntry> page = modelEntry.getPaginate();
+	public List<?> modelList(Map<String,Object> params) {
 		
 		ModelQuery modelQuery = repositoryService.createModelQuery().latestVersion().orderByLastUpdateTime().desc();
 		
-		if (StringUtils.isNotEmpty(modelEntry.getCategory())){
-			modelQuery.modelCategory(modelEntry.getCategory());
+		if (params.get("category")!=null){
+			modelQuery.modelCategory(params.get("category").toString());
 		}
-		// 查询列表
-		page.setPage(modelQuery);
-
-		return page;
+		
+		return ThreadLocalActPaginate.execQuery(modelQuery);
 	}
 
 	/**

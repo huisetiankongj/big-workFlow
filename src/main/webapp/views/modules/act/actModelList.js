@@ -58,9 +58,9 @@ $(function() {
 					{ aTargets: [ 8 ], sTitle: "操作",mData:function(data){
 						var buttons = [];
 						buttons.push('<a href="'+rootPath+'/act/process-editor/modeler.jsp?modelId=${model.id}" target="_blank">编辑</a>')
-						buttons.push('<a href="'+rootPath+'/act/model/deploy?id=${model.id}" target="_blank">部署</a>')
-						buttons.push('<a href="'+rootPath+'/export?id=${model.id}" target="_blank">导出</a>')
-						buttons.push('<a href="'+rootPath+'/delete?id=${model.id}" target="_blank">删除</a>')
+						buttons.push('<a href="'+rootPath+'/act/model/deploy?id='+data.id+'" target="_blank">部署</a>')
+						buttons.push('<a href="'+rootPath+'/act/model/export?id='+data.id+'" target="_blank">导出</a>')
+						buttons.push('<a href="'+rootPath+'/act/model/delete?id='+data.id+'" target="_blank">删除</a>')
 						return buttons.join('&nbsp;&nbsp;');
 					}}
 				],

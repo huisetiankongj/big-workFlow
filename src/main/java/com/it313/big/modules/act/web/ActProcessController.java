@@ -3,7 +3,9 @@ package com.it313.big.modules.act.web;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -16,6 +18,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -23,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.it313.big.common.persistence.Page;
+import com.it313.big.common.persistence.paginate.ThreadLocalActPaginate;
 import com.it313.big.common.utils.StringUtils;
 import com.it313.big.common.web.BaseController;
 import com.it313.big.modules.act.service.ActProcessService;
@@ -39,31 +43,40 @@ public class ActProcessController extends BaseController {
 	@Autowired
 	private ActProcessService actProcessService;
 
+	@RequestMapping(value = {"listPage"})
+	public Object listPage(){
+		return "modules/act/actProcessList";
+	}
 	/**
 	 * 流程定义列表
 	 */
-	@RequiresPermissions("act:process:edit")
-	@RequestMapping(value = {"list", ""})
-	public String processList(String category, HttpServletRequest request, HttpServletResponse response, Model model) {
-		/*
-		 * 保存两个对象，一个是ProcessDefinition（流程定义），一个是Deployment（流程部署）
-		 */
-	    Page<Object[]> page = actProcessService.processList(new Page<Object[]>(request, response), category);
-		model.addAttribute("page", page);
-		model.addAttribute("category", category);
-		return "modules/act/actProcessList";
+	@RequestMapping(value = {"list"})
+	@ResponseBody
+	public Object list(@RequestBody Map<String,Object> params){
+		ThreadLocalActPaginate.set(params);
+		List<Map<String,Object>> list = actProcessService.processList(params);
+		Object rs = ThreadLocalActPaginate.get();
+		if(rs != null)
+			return rs;
+		return list;
 	}
 	
+	@RequestMapping(value = {"runlistPage"})
+	public Object runlistPage(){
+		return "modules/act/actProcessRunningList";
+	}
 	/**
 	 * 运行中的实例列表
 	 */
-	@RequestMapping(value = "running")
-	public String runningList(String procInsId, String procDefKey, HttpServletRequest request, HttpServletResponse response, Model model) {
-	    Page<ProcessInstance> page = actProcessService.runningList(new Page<ProcessInstance>(request, response), procInsId, procDefKey);
-		model.addAttribute("page", page);
-		model.addAttribute("procInsId", procInsId);
-		model.addAttribute("procDefKey", procDefKey);
-		return "modules/act/actProcessRunningList";
+	@RequestMapping(value = {"runlist"})
+	@ResponseBody
+	public Object runlist(@RequestBody Map<String,Object> params){
+		ThreadLocalActPaginate.set(params);
+		List<Map<String,Object>> list = actProcessService.runningList(params);
+		Object rs = ThreadLocalActPaginate.get();
+		if(rs != null)
+			return rs;
+		return list;
 	}
 
 	/**

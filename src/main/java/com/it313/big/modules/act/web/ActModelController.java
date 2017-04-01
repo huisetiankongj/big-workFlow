@@ -1,5 +1,8 @@
 package com.it313.big.modules.act.web;
 
+import java.util.List;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.it313.big.common.persistence.Page;
+import com.it313.big.common.persistence.paginate.ThreadLocalActPaginate;
 import com.it313.big.common.web.BaseController;
 import com.it313.big.modules.act.entity.ModelEntry;
 import com.it313.big.modules.act.service.ActModelService;
@@ -43,8 +47,13 @@ public class ActModelController extends BaseController {
 	 */
 	@RequestMapping(value = { "findModelList", "" })
 	@ResponseBody
-	public Object findModelList(@RequestBody ModelEntry modelEntry) {
-		return actModelService.modelList(modelEntry);
+	public Object findModelList(@RequestBody Map<String,Object> params) {
+		ThreadLocalActPaginate.set(params);
+		List<?> list = actModelService.modelList(params);
+		Object rs = ThreadLocalActPaginate.get();
+		if(rs != null)
+			return rs;
+		return list;
 	}
 	/**
 	 * 创建模型
@@ -74,7 +83,6 @@ public class ActModelController extends BaseController {
 	/**
 	 * 根据Model部署流程
 	 */
-	@RequiresPermissions("act:model:edit")
 	@RequestMapping(value = "deploy")
 	public String deploy(String id, RedirectAttributes redirectAttributes) {
 		String message = actModelService.deploy(id);
@@ -85,7 +93,6 @@ public class ActModelController extends BaseController {
 	/**
 	 * 导出model的xml文件
 	 */
-	@RequiresPermissions("act:model:edit")
 	@RequestMapping(value = "export")
 	public void export(String id, HttpServletResponse response) {
 		actModelService.export(id, response);
@@ -94,7 +101,6 @@ public class ActModelController extends BaseController {
 	/**
 	 * 更新Model分类
 	 */
-	@RequiresPermissions("act:model:edit")
 	@RequestMapping(value = "updateCategory")
 	public String updateCategory(String id, String category, RedirectAttributes redirectAttributes) {
 		actModelService.updateCategory(id, category);
@@ -108,7 +114,6 @@ public class ActModelController extends BaseController {
 	 * @param redirectAttributes
 	 * @return
 	 */
-	@RequiresPermissions("act:model:edit")
 	@RequestMapping(value = "delete")
 	public String delete(String id, RedirectAttributes redirectAttributes) {
 		actModelService.delete(id);

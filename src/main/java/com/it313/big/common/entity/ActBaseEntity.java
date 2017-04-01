@@ -8,16 +8,16 @@ public class ActBaseEntity<T> implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
 	
-	protected ActPaginate<T> paginate;
+	protected ActPaginate paginate;
 
-	public ActPaginate<T> getPaginate() {
+	public ActPaginate getPaginate() {
 		if (paginate == null){
-			paginate = new ActPaginate<T>();
+			paginate = new ActPaginate();
 		}
 		return paginate;
 	}
 	
-	public ActPaginate<T> setPage(ActPaginate<T> paginate) {
+	public ActPaginate setPage(ActPaginate paginate) {
 		this.paginate = paginate;
 		return paginate;
 	}

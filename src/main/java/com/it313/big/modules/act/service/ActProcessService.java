@@ -6,7 +6,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.ZipInputStream;
 
 import javax.xml.stream.XMLInputFactory;
@@ -20,6 +22,7 @@ import org.activiti.editor.language.json.converter.BpmnJsonConverter;
 import org.activiti.engine.ActivitiException;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
+import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.repository.ProcessDefinitionQuery;
@@ -35,6 +38,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.it313.big.common.persistence.Page;
+import com.it313.big.common.persistence.paginate.ThreadLocalActPaginate;
 import com.it313.big.common.service.BaseService;
 import com.it313.big.common.utils.StringUtils;
 
@@ -54,46 +58,79 @@ public class ActProcessService extends BaseService {
 
 	/**
 	 * 流程定义列表
+	 * @param category 流程分类
 	 */
-	public Page<Object[]> processList(Page<Object[]> page, String category) {
-
-	    ProcessDefinitionQuery processDefinitionQuery = repositoryService.createProcessDefinitionQuery()
-	    		.latestVersion().orderByProcessDefinitionKey().asc();
-	    
-	    if (StringUtils.isNotEmpty(category)){
-	    	processDefinitionQuery.processDefinitionCategory(category);
+	@SuppressWarnings("unchecked")
+	public List<Map<String,Object>> processList(Map<String,Object> params) {
+		try {
+			ProcessDefinitionQuery proDefQuery = repositoryService.createProcessDefinitionQuery()
+		    		.latestVersion().active().orderByProcessDefinitionKey().asc();
+			
+			if (params.get("category")!=null){
+				proDefQuery.processDefinitionCategory(params.get("category").toString());
+			}
+			
+			List<Map<String,Object>> entryList = new ArrayList<Map<String,Object>>();
+			
+			List<ProcessDefinitionEntity> processDefinitionList = (List<ProcessDefinitionEntity>) ThreadLocalActPaginate.execQuery(proDefQuery);
+			
+			for(int i=0,len=processDefinitionList.size();i<len;i++){
+				Map<String,Object> e = new HashMap<String, Object>();
+				ProcessDefinition p = processDefinitionList.get(i);
+				String deploymentId = p.getDeploymentId();
+				Deployment deployment = repositoryService.createDeploymentQuery().deploymentId(deploymentId).singleResult();
+				e.put("id", p.getId());
+				e.put("category", p.getCategory());
+				e.put("key", p.getKey());
+				e.put("diagramResourceName", p.getDiagramResourceName());
+				e.put("version", p.getVersion());
+				e.put("deploymentTime", deployment.getDeploymentTime());
+				e.put("deploymentName", deployment.getName());
+				
+				entryList.add(e);
+			}
+			
+			return entryList;
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-	    
-	    page.setCount(processDefinitionQuery.count());
-	    
-	    List<ProcessDefinition> processDefinitionList = processDefinitionQuery.listPage(page.getFirstResult(), page.getMaxResults());
-	    for (ProcessDefinition processDefinition : processDefinitionList) {
-	      String deploymentId = processDefinition.getDeploymentId();
-	      Deployment deployment = repositoryService.createDeploymentQuery().deploymentId(deploymentId).singleResult();
-	      page.getList().add(new Object[]{processDefinition, deployment});
-	    }
-
-		return page;
+		return null;
+		
 	}
-
 	/**
 	 * 流程定义列表
 	 */
-	public Page<ProcessInstance> runningList(Page<ProcessInstance> page, String procInsId, String procDefKey) {
-
+	@SuppressWarnings("unchecked")
+	public List<Map<String,Object>> runningList(Map<String,Object> params) {
+		
 	    ProcessInstanceQuery processInstanceQuery = runtimeService.createProcessInstanceQuery();
 
-	    if (StringUtils.isNotBlank(procInsId)){
-		    processInstanceQuery.processInstanceId(procInsId);
+	    if (params.get("procInsId")!=null){
+		    processInstanceQuery.processInstanceId(params.get("procInsId").toString());
 	    }
 	    
-	    if (StringUtils.isNotBlank(procDefKey)){
-		    processInstanceQuery.processDefinitionKey(procDefKey);
+	    if (params.get("procDefKey")!=null){
+		    processInstanceQuery.processDefinitionKey(params.get("procDefKey").toString());
 	    }
 	    
-	    page.setCount(processInstanceQuery.count());
-	    page.setList(processInstanceQuery.listPage(page.getFirstResult(), page.getMaxResults()));
-		return page;
+	    List<Map<String,Object>> entryList = new ArrayList<Map<String,Object>>();
+		
+		List<ProcessInstance> proInsList = (List<ProcessInstance>) ThreadLocalActPaginate.execQuery(processInstanceQuery);
+		
+		for(int i=0,len=proInsList.size();i<len;i++){
+			Map<String,Object> e = new HashMap<String, Object>();
+			ProcessInstance p = proInsList.get(i);
+			e.put("id", p.getId());
+			e.put("activityId", p.getActivityId());
+			e.put("name", p.getName());
+			e.put("businessKey", p.getBusinessKey());
+			e.put("proDefId", p.getProcessDefinitionId());
+			e.put("proInsId", p.getProcessInstanceId());
+			
+			entryList.add(e);
+		}
+		
+		return entryList;
 	}
 	
 	/**

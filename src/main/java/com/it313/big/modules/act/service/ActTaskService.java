@@ -21,13 +21,13 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.it313.big.common.persistence.paginate.ActPaginate;
+import com.it313.big.common.persistence.paginate.ThreadLocalActPaginate;
 import com.it313.big.common.service.ActAbstractService;
 import com.it313.big.common.utils.StringUtils;
 import com.it313.big.modules.act.entity.Act;
 import com.it313.big.modules.act.utils.ProcessDefCache;
 import com.it313.big.modules.sys.entity.User;
 import com.it313.big.modules.sys.utils.UserUtils;
-import com.it313.big.modules.workFlow.entity.SelfProcessDefinition;
 import com.it313.big.modules.workFlow.utils.BeanUtils;
 
 /**
@@ -39,54 +39,8 @@ import com.it313.big.modules.workFlow.utils.BeanUtils;
 @Transactional(readOnly = true)
 public class ActTaskService extends ActAbstractService{
 
-	/**
-	 * 获取流程列表
-	 * @param category 流程分类
-	 */
-	@SuppressWarnings("unchecked")
-	public ActPaginate<Map<String,Object>> processList(Map<String,Object> params, String category) {
-		
-		try {
-			ActPaginate<Map<String,Object>> page = BeanUtils.map2Bean(new ActPaginate<Map<String,Object>>() ,(Map<String, ?>)params.get("paginate"));
-			ProcessDefinitionQuery processDefinitionQuery = repositoryService.createProcessDefinitionQuery()
-		    		.latestVersion().active().orderByProcessDefinitionKey().asc();
-			
-			if (StringUtils.isNotEmpty(category)){
-		    	processDefinitionQuery.processDefinitionCategory(category);
-			}
-			
-			List<Map<String,Object>> entryList = new ArrayList<Map<String,Object>>();
-			page.setPage(processDefinitionQuery);
-			List<ProcessDefinition> processDefinitionList = (List<ProcessDefinition>) page.getDatas();
-			
-			
-			for(int i=0,len=processDefinitionList.size();i<len;i++){
-				Map<String,Object> e = new HashMap<String, Object>();
-				ProcessDefinition p = processDefinitionList.get(i);
-				String deploymentId = p.getDeploymentId();
-				Deployment deployment = repositoryService.createDeploymentQuery().deploymentId(deploymentId).singleResult();
-				e.put("id", p.getId());
-				e.put("category", p.getCategory());
-				e.put("key", p.getKey());
-				e.put("diagramResourceName", p.getDiagramResourceName());
-				e.put("version", p.getVersion());
-				e.put("deploymentTime", deployment.getDeploymentTime());
-				e.put("deploymentName", deployment.getName());
-				
-				entryList.add(e);
-			}
-			
-			page.setDatas(entryList);
-			return page;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-		
-	}
-
-	public ActPaginate<Act> todoList(Act act) {
-		ActPaginate<Act> page = act.getPaginate();
+	public ActPaginate todoList(Act act) {
+		ActPaginate page = act.getPaginate();
 		
 		List<Act> actList = Lists.newArrayList();
 		
@@ -127,8 +81,8 @@ public class ActTaskService extends ActAbstractService{
 		return page;
 	}
 
-	public ActPaginate<Act> histoicFlowList( Act act, String startAct, String endAct){
-		ActPaginate<Act> page = act.getPaginate();
+	public ActPaginate histoicFlowList( Act act, String startAct, String endAct){
+		ActPaginate page = act.getPaginate();
 		List<Act> actList = Lists.newArrayList();
 		HistoricActivityInstanceQuery hisQuery= historyService.createHistoricActivityInstanceQuery().processInstanceId(act.getProcInsId());
 		

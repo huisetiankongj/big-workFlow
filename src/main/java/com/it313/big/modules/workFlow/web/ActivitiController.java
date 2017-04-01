@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.ZipInputStream;
 
 import javax.servlet.http.HttpServletRequest;
@@ -34,6 +35,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.it313.big.common.persistence.paginate.ActPaginate;
+import com.it313.big.common.persistence.paginate.ThreadLocalActPaginate;
 import com.it313.big.common.web.ActAbstractController;
 import com.it313.big.modules.workFlow.entity.SelfProcessDefinition;
 import com.it313.big.modules.workFlow.utils.BeanUtils;
@@ -59,33 +61,13 @@ public class ActivitiController extends ActAbstractController{
 	@RequiresPermissions("sys:workFlow:view")
 	@RequestMapping(value = {"process/list"})
 	@ResponseBody
-	public Object list(@RequestBody SelfProcessDefinition pageMap){
-		ActPaginate<SelfProcessDefinition> paginate = (ActPaginate<SelfProcessDefinition>)pageMap.getPaginate();
-		ProcessDefinitionQuery processDefinitionQuery = repositoryService.createProcessDefinitionQuery();
-		List<ProcessDefinition> list = repositoryService.createProcessDefinitionQuery()
-														.orderByProcessDefinitionVersion().asc()
-														.listPage(paginate.getStartRowNum(), paginate.getLastRowNum());
-		int totalRow = (int) processDefinitionQuery.count();
-		
-		List<SelfProcessDefinition> entryList = new ArrayList<SelfProcessDefinition>();
-		String[] ignore = {"deploymentName","deploymentTime"};
-		
-		for(int i=0,len=list.size();i<len;i++){
-			SelfProcessDefinition e = new SelfProcessDefinition();
-			ProcessDefinition p = list.get(i);
-			try {
-				BeanUtils.copyProperties(p,e,ignore);
-				String deploymentId = p.getDeploymentId();
-		        Deployment deployment = repositoryService.createDeploymentQuery().deploymentId(deploymentId).singleResult();
-		        e.setDeploymentName(deployment.getName());
-		        e.setDeploymentTime(deployment.getDeploymentTime());
-			} catch (Exception e1) {
-				e1.printStackTrace();
-			}
-			entryList.add(e);
-		}
-		ActPaginate<SelfProcessDefinition> selfProcessDefinitionList = new ActPaginate<SelfProcessDefinition>(entryList,paginate.getCurrentPage(), paginate.getRowsOfPage(),totalRow,paginate.getMenuId());
-		return selfProcessDefinitionList;
+	public Object list(@RequestBody Map<String,Object> params){
+		ThreadLocalActPaginate.set(params);
+		List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
+		Object rs = ThreadLocalActPaginate.get();
+		if(rs != null)
+			return rs;
+		return list;
 	}
 	
 	@RequiresPermissions("sys:workFlow:view")
